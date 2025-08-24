@@ -1,0 +1,15 @@
+* text=auto eol=lf
+
+# Override Windows scripts
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Binaries should never be changed
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
