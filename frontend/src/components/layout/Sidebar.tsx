@@ -79,17 +79,21 @@ export function Sidebar() {
       </div>
 
       {/* Mobile Sidebar */}
-      <Sheet open={open} onOpenChange={setOpen}>
-        <SheetTrigger asChild>
-          <Button variant="outline" size="icon" className="shrink-0 md:hidden bg-transparent">
-            <Menu className="h-5 w-5" />
-            <span className="sr-only">Toggle navigation menu</span>
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left" className="flex flex-col p-0">
-          <SidebarContent />
-        </SheetContent>
-      </Sheet>
+      <div className="md:hidden">
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger asChild>
+            <div className="px-4 lg:px-6 py-2.5 h-14 border-b fixed">
+              <Button variant="outline" size="icon" className="shrink-0 md:hidden bg-transparent">
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Toggle navigation menu</span>
+              </Button>
+            </div>
+          </SheetTrigger>
+          <SheetContent side="left" className="flex flex-col p-0">
+            <SidebarContent />
+          </SheetContent>
+        </Sheet>
+      </div>
     </>
   );
 }
