@@ -38,9 +38,9 @@ export function Sidebar() {
       <div className="flex h-14 items-center border-b lg:h-[60px] px-4">
         <Link className="flex items-center gap-2 font-semibold" to="/dashboard">
           <img
-            src="https://www.finki.ukim.mk/Content/dataImages/downloads/logo-large-500x500_2.png"
+            src="/images/finki-logo.png"
             alt="FINKI Logo"
-            className="h-6 w-6 object-contain"
+            className="h-6 w-6 object-contain mix-blend-multiply"
           />
           <span className="font-sans">Labs Manager</span>
         </Link>
