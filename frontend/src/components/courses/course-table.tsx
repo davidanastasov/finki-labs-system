@@ -75,7 +75,7 @@ export function CourseTable({ courses }: CourseTableProps) {
                 key={`${course.id}-${course.academicYear}`}
                 className="cursor-pointer hover:bg-muted/50"
               >
-                <Link to={`/courses/${course.id}`} className="contents">
+                <Link to={`/courses`} className="contents">
                   <TableCell className="font-medium">{course.code}</TableCell>
                   <TableCell>{course.name}</TableCell>
                   <TableCell>{course.semester}</TableCell>
