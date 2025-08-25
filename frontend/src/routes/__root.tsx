@@ -3,8 +3,7 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanstackDevtools } from "@tanstack/react-devtools";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import type { QueryClient } from "@tanstack/react-query";
-import { Header } from "@/components/layout/Header";
-import { Sidebar } from "@/components/layout/Sidebar";
+import { Header, Sidebar } from "@/components/layout";
 
 interface MyRouterContext {
   queryClient: QueryClient;
