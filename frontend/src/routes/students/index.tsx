@@ -4,6 +4,8 @@ import { Search, Users } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { StudentTable } from "@/components/students/student-table";
+import { AutoComplete } from "@/components/ui/autocomplete";
+import { useStudyPrograms as useStudyPrograms } from "@/data/studyProgram";
 
 const mockStudents = [
   {
@@ -72,6 +74,11 @@ function RouteComponent() {
   const [selectedTrack, setSelectedTrack] = useState("all");
   const [selectedStatus] = useState("all");
 
+  const [studyProgramSearchValue, setStudyProgramSearchValue] = useState<string>("");
+  const [selectedProgramCode, setSelectedProgramCode] = useState<string>("");
+
+  const { data: studyPrograms, isLoading: isStudyProgramsLoading } = useStudyPrograms();
+
   const filteredStudents = students.filter((student) => {
     const matchesSearch =
       student.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -84,10 +91,7 @@ function RouteComponent() {
     return matchesSearch && matchesRole && matchesTrack && matchesStatus;
   });
 
-  const studyTracks = Array.from(
-    new Set(students.filter((s) => s.studyTrack).map((s) => s.studyTrack)),
-  );
-  const totalStudents = students.filter((s) => s.role === "student").length;
+  const totalStudents = students.length;
 
   return (
     <div className="space-y-6">
@@ -111,10 +115,10 @@ function RouteComponent() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Study Tracks</CardTitle>
+            <CardTitle className="text-sm font-medium">Study Programs</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{studyTracks.length}</div>
+            <div className="text-2xl font-bold">{studyPrograms?.length ?? "-"}</div>
             <p className="text-xs text-muted-foreground">Different programs</p>
           </CardContent>
         </Card>
@@ -137,18 +141,21 @@ function RouteComponent() {
               />
             </div>
 
-            <select
-              value={selectedTrack}
-              onChange={(e) => setSelectedTrack(e.target.value)}
-              className="px-3 py-2 border border-input bg-background rounded-md text-sm"
-            >
-              <option value="all">All Tracks</option>
-              {studyTracks.map((track) => (
-                <option key={track} value={track}>
-                  {track}
-                </option>
-              ))}
-            </select>
+            <AutoComplete
+              selectedValue={selectedProgramCode}
+              onSelectedValueChange={setSelectedProgramCode}
+              searchValue={studyProgramSearchValue}
+              onSearchValueChange={setStudyProgramSearchValue}
+              items={
+                studyPrograms?.map((studyProgram) => ({
+                  label: `${studyProgram.code} - ${studyProgram.name}`,
+                  value: studyProgram.code,
+                })) ?? []
+              }
+              isLoading={isStudyProgramsLoading}
+              placeholder="Filter Study Program"
+              align="end"
+            />
           </div>
           <StudentTable students={filteredStudents} />
         </CardContent>

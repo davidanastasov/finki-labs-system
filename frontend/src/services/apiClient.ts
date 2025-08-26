@@ -23,7 +23,7 @@ const apiClient = ky.create({
             throw new APIError(body.message, body.statusCode);
           }
 
-          return response;
+          return new Response(JSON.stringify(body.data));
         } catch (error) {
           if (error instanceof APIError) {
             throw error;
