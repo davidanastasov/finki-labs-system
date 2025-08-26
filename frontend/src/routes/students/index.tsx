@@ -6,92 +6,28 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { StudentTable } from "@/components/students/student-table";
 import { AutoComplete } from "@/components/ui/autocomplete";
 import { useStudyPrograms as useStudyPrograms } from "@/data/studyProgram";
-
-const mockStudents = [
-  {
-    id: "1",
-    firstName: "Alice",
-    lastName: "Johnson",
-    email: "alice.johnson@university.edu",
-    role: "student" as const,
-    indexNumber: "2023/0001",
-    studyTrack: "Computer Science",
-    enrolledCourses: ["CS101", "CS102"],
-    totalPoints: 85,
-    averageScore: 8.5,
-    status: "active" as const,
-  },
-  {
-    id: "2",
-    firstName: "Bob",
-    lastName: "Smith",
-    email: "bob.smith@university.edu",
-    role: "student" as const,
-    indexNumber: "2023/0002",
-    studyTrack: "Computer Science",
-    enrolledCourses: ["CS101"],
-    totalPoints: 72,
-    averageScore: 7.2,
-    status: "active" as const,
-  },
-  {
-    id: "3",
-    firstName: "Carol",
-    lastName: "Davis",
-    email: "carol.davis@university.edu",
-    role: "student" as const,
-    indexNumber: "2023/0003",
-    studyTrack: "Information Systems",
-    enrolledCourses: ["CS101", "CS102", "CS103"],
-    totalPoints: 94,
-    averageScore: 9.4,
-    status: "active" as const,
-  },
-
-  {
-    id: "5",
-    firstName: "David",
-    lastName: "Wilson",
-    email: "david.wilson@university.edu",
-    role: "student" as const,
-    indexNumber: "2022/0045",
-    studyTrack: "Computer Science",
-    enrolledCourses: ["CS102"],
-    totalPoints: 67,
-    averageScore: 6.7,
-    status: "inactive" as const,
-  },
-];
+import { useStudents } from "@/data/student";
 
 export const Route = createFileRoute("/students/")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const [students] = useState(mockStudents);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedRole] = useState("all");
-  const [selectedTrack, setSelectedTrack] = useState("all");
-  const [selectedStatus] = useState("all");
 
   const [studyProgramSearchValue, setStudyProgramSearchValue] = useState<string>("");
   const [selectedProgramCode, setSelectedProgramCode] = useState<string>("");
 
   const { data: studyPrograms, isLoading: isStudyProgramsLoading } = useStudyPrograms();
 
-  const filteredStudents = students.filter((student) => {
-    const matchesSearch =
-      student.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.indexNumber.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRole = selectedRole === "all" || student.role === selectedRole;
-    const matchesTrack = selectedTrack === "all" || student.studyTrack === selectedTrack;
-    const matchesStatus = selectedStatus === "all" || student.status === selectedStatus;
-    return matchesSearch && matchesRole && matchesTrack && matchesStatus;
+  const { data: students } = useStudents({
+    search: searchTerm,
+    studyProgramCode: selectedProgramCode,
   });
 
-  const totalStudents = students.length;
+  if (!students) {
+    return null;
+  }
 
   return (
     <div className="space-y-6">
@@ -109,7 +45,7 @@ function RouteComponent() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalStudents}</div>
+            <div className="text-2xl font-bold">{students.count}</div>
             <p className="text-xs text-muted-foreground">Across all courses</p>
           </CardContent>
         </Card>
@@ -157,7 +93,17 @@ function RouteComponent() {
               align="end"
             />
           </div>
-          <StudentTable students={filteredStudents} />
+          <StudentTable
+            students={students.result?.map((student) => ({
+              firstName: student.name,
+              lastName: student.lastName,
+              email: student.email,
+              studyTrack: student.studyProgram.name,
+              id: student.index,
+              indexNumber: student.index,
+              enrolledCoursesCount: 0,
+            }))}
+          />
         </CardContent>
       </Card>
     </div>

@@ -1,6 +1,4 @@
-import { useState } from "react";
 import { BookOpen } from "lucide-react";
-import { StudentDetailsDialog } from "@/components/students/student-details-dialog";
 
 import {
   Table,
@@ -16,13 +14,9 @@ interface Student {
   firstName: string;
   lastName: string;
   email: string;
-  role: "student" | "teacher";
   indexNumber: string;
   studyTrack: string;
-  enrolledCourses: string[];
-  totalPoints: number;
-  averageScore: number;
-  status: "active" | "inactive";
+  enrolledCoursesCount: number;
 }
 
 interface StudentTableProps {
@@ -30,8 +24,8 @@ interface StudentTableProps {
 }
 
 export function StudentTable({ students }: StudentTableProps) {
-  const [selectedStudent] = useState<Student | null>(null);
-  const [showDetails, setShowDetails] = useState(false);
+  // const [selectedStudent] = useState<Student | null>(null);
+  // const [showDetails, setShowDetails] = useState(false);
 
   return (
     <>
@@ -62,14 +56,10 @@ export function StudentTable({ students }: StudentTableProps) {
                 </TableCell>
                 <TableCell>{student.studyTrack}</TableCell>
                 <TableCell>
-                  {student.role === "student" ? (
-                    <div className="flex items-center gap-1">
-                      <BookOpen className="h-4 w-4 text-muted-foreground" />
-                      {student.enrolledCourses.length}
-                    </div>
-                  ) : (
-                    <span className="text-muted-foreground">-</span>
-                  )}
+                  <div className="flex items-center gap-1">
+                    <BookOpen className="h-4 w-4 text-muted-foreground" />
+                    {student.enrolledCoursesCount}
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
@@ -77,7 +67,7 @@ export function StudentTable({ students }: StudentTableProps) {
         </Table>
       </div>
 
-      {selectedStudent && (
+      {/* {selectedStudent && (
         <>
           <StudentDetailsDialog
             student={selectedStudent}
@@ -85,7 +75,7 @@ export function StudentTable({ students }: StudentTableProps) {
             onOpenChange={setShowDetails}
           />
         </>
-      )}
+      )} */}
     </>
   );
 }
