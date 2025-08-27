@@ -40,7 +40,7 @@ export function Sidebar() {
           <img
             src="/images/finki-logo.png"
             alt="FINKI Logo"
-            className="h-6 w-6 object-contain mix-blend-multiply"
+            className="h-6 w-6 object-contain mix-blend-multiply dark:mix-blend-normal"
           />
           <span className="font-sans">Labs Manager</span>
         </Link>
