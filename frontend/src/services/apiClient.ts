@@ -11,27 +11,20 @@ const apiClient = ky.create({
     afterResponse: [
       async (_request, _options, response) => {
         const contentType = response.headers.get("content-type");
-        if (!contentType?.includes("application/json")) {
-          return response;
+
+        if (!response.ok && contentType === "application/problem+json") {
+          const problem: ProblemDetails = await response.json();
+
+          throw new APIError(
+            problem.title || "Error",
+            problem.detail || "An error occurred",
+            problem.status || response.status,
+            problem.type,
+            problem.instance,
+          );
         }
 
-        try {
-          const cloned = response.clone();
-          const body = (await cloned.json()) as GenericResponse<unknown>;
-
-          if (body.success === false) {
-            throw new APIError(body.message, body.statusCode);
-          }
-
-          return response;
-        } catch (error) {
-          if (error instanceof APIError) {
-            throw error;
-          }
-
-          // If JSON parsing failed, return the original response
-          return response;
-        }
+        return response;
       },
     ],
   },
@@ -41,27 +34,25 @@ export default apiClient;
 
 export class APIError extends Error {
   public statusCode: number;
+  public type?: string;
+  public instance?: string;
 
-  constructor(message: string, statusCode: number) {
-    super(message);
+  constructor(title: string, detail: string, statusCode: number, type?: string, instance?: string) {
+    super(`${title}: ${detail}`);
     this.name = "APIError";
     this.statusCode = statusCode;
+    this.type = type;
+    this.instance = instance;
   }
 }
 
-// === Types ===
-
-interface SuccessResponse<T = any> {
-  success: true;
-  data: T;
+export interface ProblemDetails {
+  type?: string; // URI reference to problem type
+  title: string; // Short, human-readable summary of the problem
+  status: number; // HTTP status code
+  detail: string; // Human-readable explanation specific to this occurrence
+  instance?: string; // URI reference to the specific occurrence
+  [key: string]: any; // Extension members (optional)
 }
-
-interface FailedResponse {
-  success: false;
-  message: string;
-  statusCode: number;
-}
-
-type GenericResponse<T> = SuccessResponse<T> | FailedResponse;
 
 export type PaginatedResponse<T> = { count: number; result: T };
