@@ -94,7 +94,7 @@ function RouteComponent() {
             />
           </div>
           <StudentTable
-            students={students.result?.map((student) => ({
+            students={students.result.map((student) => ({
               firstName: student.name,
               lastName: student.lastName,
               email: student.email,

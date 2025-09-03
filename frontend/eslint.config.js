@@ -14,6 +14,17 @@ export default [
     },
   },
   {
-    ignores: ["eslint.config.js", "prettier.config.js"],
+    name: "custom/our-overrides",
+    rules: {
+      "@typescript-eslint/array-type": "off",
+    },
+  },
+  {
+    ignores: [
+      "eslint.config.js",
+      "prettier.config.js",
+      "src/routeTree.gen.ts",
+      "src/components/ui/**",
+    ],
   },
 ];
