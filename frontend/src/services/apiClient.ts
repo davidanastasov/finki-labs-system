@@ -55,4 +55,4 @@ export interface ProblemDetails {
   [key: string]: any; // Extension members (optional)
 }
 
-export type PaginatedResponse<T> = { count: number; result: T };
+export type PaginatedResponse<T> = { count: number; items: T[] };
