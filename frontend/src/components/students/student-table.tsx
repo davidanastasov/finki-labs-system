@@ -1,5 +1,4 @@
 import { BookOpen } from "lucide-react";
-
 import {
   Table,
   TableBody,
@@ -27,9 +26,6 @@ interface StudentTableProps {
 }
 
 export function StudentTable({ students, isLoading = false, pageSize = 10 }: StudentTableProps) {
-  // const [selectedStudent] = useState<Student | null>(null);
-  // const [showDetails, setShowDetails] = useState(false);
-
   const tableHeaders = ["Name", "Email", "Index Number", "Study Track", "Courses"];
 
   if (isLoading) {
@@ -81,16 +77,6 @@ export function StudentTable({ students, isLoading = false, pageSize = 10 }: Stu
           </TableBody>
         </Table>
       </div>
-
-      {/* {selectedStudent && (
-        <>
-          <StudentDetailsDialog
-            student={selectedStudent}
-            open={showDetails}
-            onOpenChange={setShowDetails}
-          />
-        </>
-      )} */}
     </>
   );
 }
