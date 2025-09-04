@@ -6,6 +6,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface StudentApplicationService {
-    PaginatedList<StudentDTO> filter(String search, String studyProgramCode, Integer pageNum, Integer pageSize);
+    PaginatedList<StudentDTO> filter(String search, String studyProgramCode, Integer page, Integer pageSize);
 
 }

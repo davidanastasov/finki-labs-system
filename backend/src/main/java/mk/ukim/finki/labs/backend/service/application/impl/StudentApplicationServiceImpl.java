@@ -16,14 +16,14 @@ public class StudentApplicationServiceImpl implements StudentApplicationService 
     private final StudentService studentService;
 
     @Override
-    public PaginatedList<StudentDTO> filter(String search, String studyProgramCode, Integer pageNum, Integer pageSize) {
-        var students = studentService.filter(search, studyProgramCode, pageNum, pageSize);
+    public PaginatedList<StudentDTO> filter(String search, String studyProgramCode, Integer page, Integer pageSize) {
+        var students = studentService.filter(search, studyProgramCode, page, pageSize);
 
         return new PaginatedList<>(
                 students.getTotalElements(),
                 students.stream()
-                .map(StudentDTO::from)
-                .collect(Collectors.toList())
+                        .map(StudentDTO::from)
+                        .collect(Collectors.toList())
         );
     }
 }

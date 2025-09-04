@@ -2,35 +2,31 @@ import { queryOptions, useQuery } from "@tanstack/react-query";
 import type { QueryConfig } from "@/integrations/tanstack-query/types";
 import studentService from "@/services/student";
 
-export const getAllStudentsQueryOptions = (
-  search?: string,
-  studyProgramCode?: string,
-  pageNum?: number,
-  pageSize?: number,
-) => {
+export const filterStudentsQueryOptions = (params: Parameters<typeof studentService.filter>[0]) => {
   return queryOptions({
-    queryKey: ["students"],
-    queryFn: () => studentService.filter(search, studyProgramCode, pageNum, pageSize),
+    queryKey: ["students", params],
+    queryFn: () => studentService.filter(params),
+    gcTime: 5 * 1000, // 5 seconds
   });
 };
 
 type UseStudentsOptions = {
   search?: string;
   studyProgramCode?: string;
-  pageNum?: number;
+  page?: number;
   pageSize?: number;
-  queryConfig?: QueryConfig<typeof getAllStudentsQueryOptions>;
+  queryConfig?: QueryConfig<typeof filterStudentsQueryOptions>;
 };
 
 export const useStudents = ({
   search,
   studyProgramCode,
-  pageNum,
+  page,
   pageSize,
   queryConfig,
 }: UseStudentsOptions = {}) => {
   return useQuery({
-    ...getAllStudentsQueryOptions(search, studyProgramCode, pageNum, pageSize),
+    ...filterStudentsQueryOptions({ search, studyProgramCode, page, pageSize }),
     ...queryConfig,
   });
 };

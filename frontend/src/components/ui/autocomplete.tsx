@@ -12,11 +12,12 @@ type Props<T extends string> = {
   onSelectedValueChange: (value: T) => void;
   searchValue: string;
   onSearchValueChange: (value: string) => void;
-  items: { value: T; label: string }[];
+  items: Array<{ value: T; label: string }>;
   isLoading?: boolean;
   emptyMessage?: string;
   placeholder?: string;
   align?: "start" | "center" | "end";
+  inputClassName?: string;
 };
 
 export function AutoComplete<T extends string>({
@@ -29,6 +30,7 @@ export function AutoComplete<T extends string>({
   emptyMessage = "No items.",
   placeholder = "Search...",
   align = "center",
+  inputClassName,
 }: Props<T>) {
   const [open, setOpen] = useState(false);
 
@@ -78,14 +80,14 @@ export function AutoComplete<T extends string>({
           <PopoverAnchor asChild>
             <CommandPrimitive.Input
               asChild
-              value={searchValue}
+              value={searchValue || labels[selectedValue] || ""}
               onValueChange={onSearchValueChange}
               onKeyDown={(e) => setOpen(e.key !== "Escape")}
               onMouseDown={() => setOpen((open) => !!searchValue || !open)}
               onFocus={() => setOpen(true)}
               onBlur={onInputBlur}
             >
-              <Input placeholder={placeholder} />
+              <Input placeholder={placeholder} className={inputClassName} />
             </CommandPrimitive.Input>
           </PopoverAnchor>
           {!open && <CommandList aria-hidden="true" className="hidden" />}
@@ -128,7 +130,7 @@ export function AutoComplete<T extends string>({
                   ))}
                 </CommandGroup>
               ) : null}
-              {!isLoading ? <CommandEmpty>{emptyMessage}</CommandEmpty> : null}
+              {!isLoading ? <CommandEmpty className="px-4">{emptyMessage}</CommandEmpty> : null}
             </CommandList>
           </PopoverContent>
         </Command>

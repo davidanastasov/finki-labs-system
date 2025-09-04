@@ -20,7 +20,7 @@ public class StudentServiceImpl implements StudentService {
     private final StudentRepository studentRepository;
 
     @Override
-    public Page<Student> filter(String search, String studyProgramCode, Integer pageNum, Integer pageSize) {
+    public Page<Student> filter(String search, String studyProgramCode, Integer page, Integer pageSize) {
 
         Specification<Student> fullNameSpec = (root, query, cb) -> {
             if (search == null || search.isEmpty()) return null;
@@ -40,7 +40,7 @@ public class StudentServiceImpl implements StudentService {
 
         return this.studentRepository.findAll(
                 specification,
-                PageRequest.of(pageNum, pageSize)
+                PageRequest.of(page, pageSize)
         );
     }
 

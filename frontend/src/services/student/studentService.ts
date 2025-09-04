@@ -1,15 +1,15 @@
 import apiClient from "../apiClient";
-import type { FilterStudentsResponse } from "./models";
+import type { FilterStudentsParams, FilterStudentsResponse } from "./models";
 
-export async function filter(
-  search: string = "",
-  studyProgramCode: string = "",
-  pageNum: number = 1,
-  pageSize: number = 10,
-) {
+export async function filter({ search, studyProgramCode, page, pageSize }: FilterStudentsParams) {
+  const searchParams = new URLSearchParams();
+
+  if (search) searchParams.set("search", search);
+  if (studyProgramCode) searchParams.set("studyProgramCode", studyProgramCode);
+  if (page !== undefined) searchParams.set("page", String(page));
+  if (pageSize !== undefined) searchParams.set("pageSize", String(pageSize));
+
   return await apiClient
-    .get<FilterStudentsResponse>(`api/students/filter`, {
-      searchParams: { search, studyProgramCode, pageNum, pageSize },
-    })
+    .get<FilterStudentsResponse>(`api/students/filter`, { searchParams })
     .json();
 }
