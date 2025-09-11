@@ -1,5 +1,8 @@
 package mk.ukim.finki.labs.backend.model.domain;
 
+import lombok.Getter;
+
+@Getter
 public enum SemesterState {
 
     FINISHED(false),
