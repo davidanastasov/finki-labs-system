@@ -2,6 +2,7 @@ import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { ThemeProvider } from "./providers/theme-provider.tsx";
+import { PageLoader } from "./components/loaders/page-loader.tsx";
 
 import * as TanStackQueryProvider from "./integrations/tanstack-query/root-provider.tsx";
 
@@ -18,6 +19,8 @@ const router = createRouter({
   context: {
     ...TanStackQueryProviderContext,
   },
+  defaultPendingComponent: () => <PageLoader />,
+  defaultPendingMs: 500,
   defaultPreload: "intent",
   scrollRestoration: true,
   defaultStructuralSharing: true,

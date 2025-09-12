@@ -2,11 +2,9 @@ package mk.ukim.finki.labs.backend.config.init;
 
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
-import mk.ukim.finki.labs.backend.model.domain.Semester;
-import mk.ukim.finki.labs.backend.model.domain.SemesterType;
-import mk.ukim.finki.labs.backend.model.domain.Student;
-import mk.ukim.finki.labs.backend.model.domain.StudyProgram;
-import org.springframework.data.jpa.repository.JpaRepository;
+import mk.ukim.finki.labs.backend.model.domain.*;
+import mk.ukim.finki.labs.backend.repository.SemesterRepository;
+import mk.ukim.finki.labs.backend.repository.StudentRepository;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -15,8 +13,8 @@ import java.util.List;
 @Component
 @AllArgsConstructor
 public class DataInitializer {
-    private final _StudentRepository studentRepository;
-    private final _SemesterRepository semesterRepository;
+    private final StudentRepository studentRepository;
+    private final SemesterRepository semesterRepository;
 
     @PostConstruct
     public void init() {
@@ -34,6 +32,7 @@ public class DataInitializer {
         summerSemester.setYear("2024-25");
         summerSemester.setStartDate(LocalDate.of(2025, 2, 15));
         summerSemester.setEndDate(LocalDate.of(2025, 6, 15));
+        summerSemester.setState(SemesterState.STARTED);
 
         semesterRepository.saveAll(List.of(winterSemester, summerSemester));
 
@@ -52,9 +51,3 @@ public class DataInitializer {
         }
     }
 }
-
-interface _StudentRepository extends JpaRepository<Student, String> {
-};
-
-interface _SemesterRepository extends JpaRepository<Semester, String> {
-};

@@ -1,0 +1,39 @@
+import type {
+  CreateLabCourseRequest,
+  FilterLabCoursesParams,
+  FilterLabCoursesResponse,
+  LabCourseResponse,
+  UpdateLabCourseRequest,
+} from "./models";
+import apiClient from "@/services/apiClient";
+
+export const filter = async (params: FilterLabCoursesParams) => {
+  const searchParams = new URLSearchParams();
+
+  if (params.search) searchParams.append("search", params.search);
+  if (params.semesterCode) searchParams.append("semesterCode", params.semesterCode);
+  if (params.page !== undefined) searchParams.append("page", params.page.toString());
+  if (params.pageSize !== undefined) searchParams.append("pageSize", params.pageSize.toString());
+
+  return await apiClient
+    .get<FilterLabCoursesResponse>(`api/lab-courses/filter`, { searchParams })
+    .json();
+};
+
+export const findById = async (id: number) => {
+  return await apiClient.get<LabCourseResponse>(`api/lab-courses/${id}`).json();
+};
+
+export const create = async (data: CreateLabCourseRequest) => {
+  return await apiClient.post<LabCourseResponse>("api/lab-courses", { json: data }).json();
+};
+
+export const update = async (data: UpdateLabCourseRequest) => {
+  return await apiClient
+    .put<LabCourseResponse>(`api/lab-courses/${data.id}`, { json: data })
+    .json();
+};
+
+export const deleteById = async (id: number) => {
+  await apiClient.delete(`api/lab-courses/${id}`);
+};
