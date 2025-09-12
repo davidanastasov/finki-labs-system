@@ -1,18 +1,23 @@
 import { Plus, Search } from "lucide-react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import type { Course } from "@/components/courses/course-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CourseTable } from "@/components/courses/course-table";
-import { CreateCourseDialog } from "@/components/courses/create-course-dialog";
+import { CourseDialog } from "@/components/courses/course-form-dialog";
+import { getAllSemestersQueryOptions } from "@/data/semester";
+import { getAllSubjectsQueryOptions } from "@/data/subject";
 
 export const Route = createFileRoute("/courses/")({
   component: CoursesPage,
+  loader: ({ context: { queryClient } }) =>
+    Promise.allSettled([
+      queryClient.ensureQueryData(getAllSubjectsQueryOptions()),
+      queryClient.ensureQueryData(getAllSemestersQueryOptions()),
+    ]),
 });
-
-// Import the Course type
-import type { Course } from "@/components/courses/course-table";
 
 // Mock data for courses
 const mockCourses: Course[] = [
@@ -55,6 +60,7 @@ export default function CoursesPage() {
   const [courses] = useState(mockCourses);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedYear, setSelectedYear] = useState("2024/25");
+  const [isNewCourseOpen, setIsNewCourseOpen] = useState(false);
 
   const filteredCourses = courses.filter((course) => {
     const matchesSearch =
@@ -72,12 +78,10 @@ export default function CoursesPage() {
         <div>
           <h1 className="text-3xl font-bold font-sans">Courses</h1>
         </div>
-        <CreateCourseDialog>
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Course
-          </Button>
-        </CreateCourseDialog>
+        <Button onClick={() => setIsNewCourseOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" />
+          Add Course
+        </Button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-4">
@@ -146,6 +150,8 @@ export default function CoursesPage() {
           <CourseTable courses={filteredCourses} />
         </CardContent>
       </Card>
+
+      <CourseDialog open={isNewCourseOpen} onOpenChange={setIsNewCourseOpen} />
     </div>
   );
 }

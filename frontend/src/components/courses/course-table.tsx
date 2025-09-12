@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Edit, Eye, MoreHorizontal, Users } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { CourseDetailsDialog } from "./course-details-dialog";
-import { EditCourseDialog } from "./edit-course-dialog";
+import { CourseDialog } from "./course-form-dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -18,7 +19,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Link } from "@tanstack/react-router";
 
 export interface Course {
   id: string;
@@ -151,7 +151,11 @@ export function CourseTable({ courses }: CourseTableProps) {
             open={showDetails}
             onOpenChange={setShowDetails}
           />
-          <EditCourseDialog course={selectedCourse} open={showEdit} onOpenChange={setShowEdit} />
+          <CourseDialog
+            courseId={Number(selectedCourse.id)}
+            open={showEdit}
+            onOpenChange={setShowEdit}
+          />
         </>
       )}
     </>

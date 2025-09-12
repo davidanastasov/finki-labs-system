@@ -1,13 +1,8 @@
-export enum SemesterType {
-  WINTER = "WINTER",
-  SUMMER = "SUMMER",
-}
+export type SemesterType = "WINTER" | "SUMMER";
 
-export type Subject = {
+export type SubjectsResponse = {
   code: string;
   name: string;
   abbreviation: string;
   semester: SemesterType;
-};
-
-export type SubjectsResponse = Subject[];
+}[];
