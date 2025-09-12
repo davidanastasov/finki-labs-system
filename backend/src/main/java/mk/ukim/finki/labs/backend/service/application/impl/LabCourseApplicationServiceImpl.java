@@ -1,6 +1,7 @@
 package mk.ukim.finki.labs.backend.service.application.impl;
 
 import lombok.AllArgsConstructor;
+import mk.ukim.finki.labs.backend.dto.PaginatedList;
 import mk.ukim.finki.labs.backend.dto.lab_course.CreateLabCourseDTO;
 import mk.ukim.finki.labs.backend.dto.lab_course.LabCourseDTO;
 import mk.ukim.finki.labs.backend.dto.lab_course.UpdateLabCourseDTO;
@@ -12,6 +13,7 @@ import mk.ukim.finki.labs.backend.service.domain.LabCourseService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
@@ -21,6 +23,18 @@ public class LabCourseApplicationServiceImpl implements LabCourseApplicationServ
     private final SemesterRepository semesterRepository;
     private final JoinedSubjectRepository joinedSubjectRepository;
     private final ProfessorRepository professorRepository;
+    
+    @Override
+    public PaginatedList<LabCourseDTO> filter(String search, String semesterCode, Integer page, Integer pageSize) {
+        var courses = labCourseService.filter(search, semesterCode, page, pageSize);
+
+        return new PaginatedList<>(
+                courses.getTotalElements(),
+                courses.stream()
+                        .map(LabCourseDTO::from)
+                        .collect(Collectors.toList())
+        );
+    }
     
     @Override
     public List<LabCourseDTO> findAll() {

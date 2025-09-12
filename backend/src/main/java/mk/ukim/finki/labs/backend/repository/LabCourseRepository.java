@@ -3,12 +3,13 @@ package mk.ukim.finki.labs.backend.repository;
 import mk.ukim.finki.labs.backend.model.domain.LabCourse;
 import mk.ukim.finki.labs.backend.model.domain.Semester;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface LabCourseRepository extends JpaRepository<LabCourse, Long> {
+public interface LabCourseRepository extends JpaRepository<LabCourse, Long>, JpaSpecificationExecutor<LabCourse> {
     
     List<LabCourse> findBySemester(Semester semester);
     

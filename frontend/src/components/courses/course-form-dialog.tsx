@@ -33,6 +33,7 @@ import { useProfessors } from "@/data/professor";
 import { useSemesters } from "@/data/semester";
 import { useCreateLabCourse, useLabCourseById, useUpdateLabCourse } from "@/data/labCourse";
 import { useSubjects } from "@/data/subject";
+import { capitalize } from "@/lib/utils";
 
 type FormData = z.infer<typeof formSchema>;
 const formSchema = z.object({
@@ -255,12 +256,12 @@ export function CourseDialog({ courseId, open, onOpenChange: setOpen }: CourseDi
                                 isLoadingSemesters ? "Loading semesters..." : "Select semester"
                               }
                             >
-                              {/* {field.value && selectedSemester && ( */}
-                              <span className="capitalize">
-                                {selectedSemester?.year} -{" "}
-                                {selectedSemester?.semesterType.toLowerCase()}
-                              </span>
-                              {/* )} */}
+                              {field.value && selectedSemester && (
+                                <span>
+                                  {selectedSemester.year} -{" "}
+                                  {capitalize(selectedSemester.semesterType)}
+                                </span>
+                              )}
                             </SelectValue>
                           </SelectTrigger>
                         </FormControl>
@@ -268,8 +269,8 @@ export function CourseDialog({ courseId, open, onOpenChange: setOpen }: CourseDi
                           {allSemesters.map((semester) => (
                             <SelectItem key={semester.code} value={semester.code}>
                               <div className="flex flex-col gap-1">
-                                <span className="font-medium capitalize">
-                                  {semester.year} - {semester.semesterType.toLowerCase()}
+                                <span className="font-medium">
+                                  {semester.year} - {capitalize(semester.semesterType)}
                                 </span>
                                 {semester.isActive && (
                                   <span className="text-muted-foreground text-xs">Active</span>

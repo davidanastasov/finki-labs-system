@@ -24,7 +24,7 @@ public record LabCourseDTO(
                         .map(semester -> new LabCourseSemesterDTO(semester.getCode(), semester.getYear(), semester.getSemesterType()))
                         .orElse(null),
                 Optional.ofNullable(labCourse.getJoinedSubject())
-                        .map(subject -> new LabCourseSubjectDTO(subject.getAbbreviation(), subject.getName()))
+                        .map(subject -> new LabCourseSubjectDTO(subject.getAbbreviation(), subject.getName(), subject.getMainSubject().getId()))
                         .orElse(null),
                 labCourse.getDescription(),
                 labCourse.getProfessors()
@@ -42,7 +42,7 @@ public record LabCourseDTO(
     record LabCourseProfessorDTO(String id, String name) {
     }
 
-    record LabCourseSubjectDTO(String abbreviation, String name) {
+    record LabCourseSubjectDTO(String abbreviation, String name, String code) {
     }
 
     record LabCourseSemesterDTO(String code, String year, SemesterType type) {

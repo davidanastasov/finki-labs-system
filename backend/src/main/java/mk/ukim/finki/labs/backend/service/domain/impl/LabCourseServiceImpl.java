@@ -5,11 +5,17 @@ import mk.ukim.finki.labs.backend.model.domain.LabCourse;
 import mk.ukim.finki.labs.backend.repository.LabCourseRepository;
 import mk.ukim.finki.labs.backend.service.domain.LabCourseService;
 import mk.ukim.finki.labs.backend.model.exceptions.DuplicateLabCourseException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+
+import static mk.ukim.finki.labs.backend.service.specification.FieldFilterSpecification.filterEquals;
+import static mk.ukim.finki.labs.backend.service.specification.FieldFilterSpecification.filterContainsText;
 
 @AllArgsConstructor
 @Service
@@ -17,6 +23,27 @@ import java.util.Optional;
 public class LabCourseServiceImpl implements LabCourseService {
     
     private final LabCourseRepository labCourseRepository;
+    
+    @Override
+    public Page<LabCourse> filter(String search, String semesterCode, Integer page, Integer pageSize) {
+        
+        Specification<LabCourse> subjectSearchSpec = Specification.anyOf(
+            filterContainsText(LabCourse.class, "joinedSubject.abbreviation", search),
+            filterContainsText(LabCourse.class, "joinedSubject.name", search),
+            filterContainsText(LabCourse.class, "joinedSubject.mainSubject.id", search)
+        );
+
+        Specification<LabCourse> specification = Specification
+                .allOf(
+                        subjectSearchSpec,
+                        filterEquals(LabCourse.class, "semester.code", semesterCode)
+                );
+
+        return this.labCourseRepository.findAll(
+                specification,
+                PageRequest.of(page, pageSize)
+        );
+    }
     
     @Override
     @Transactional(readOnly = true)

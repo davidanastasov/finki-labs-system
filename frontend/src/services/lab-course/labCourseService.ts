@@ -1,24 +1,23 @@
 import type {
   CreateLabCourseRequest,
+  FilterLabCoursesParams,
+  FilterLabCoursesResponse,
   LabCourseResponse,
-  LabCoursesResponse,
   UpdateLabCourseRequest,
 } from "./models";
 import apiClient from "@/services/apiClient";
 
-export const findAll = async (params?: { semesterCode?: string; subjectAbbreviation?: string }) => {
+export const filter = async (params: FilterLabCoursesParams) => {
   const searchParams = new URLSearchParams();
 
-  if (params?.semesterCode) {
-    searchParams.append("semesterCode", params.semesterCode);
-  }
+  if (params.search) searchParams.append("search", params.search);
+  if (params.semesterCode) searchParams.append("semesterCode", params.semesterCode);
+  if (params.page !== undefined) searchParams.append("page", params.page.toString());
+  if (params.pageSize !== undefined) searchParams.append("pageSize", params.pageSize.toString());
 
-  if (params?.subjectAbbreviation) {
-    searchParams.append("subjectAbbreviation", params.subjectAbbreviation);
-  }
-
-  const url = `api/lab-courses${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
-  return await apiClient.get<LabCoursesResponse>(url).json();
+  return await apiClient
+    .get<FilterLabCoursesResponse>(`api/lab-courses/filter`, { searchParams })
+    .json();
 };
 
 export const findById = async (id: number) => {

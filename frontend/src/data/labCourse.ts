@@ -4,13 +4,12 @@ import type { CreateLabCourseRequest, UpdateLabCourseRequest } from "@/services/
 import labCourseService from "@/services/lab-course";
 
 // Query options
-export const getAllLabCoursesQueryOptions = (params?: {
-  semesterCode?: string;
-  subjectAbbreviation?: string;
-}) => {
+export const getLabCoursesFilterQueryOptions = (
+  params: Parameters<typeof labCourseService.filter>[0],
+) => {
   return queryOptions({
-    queryKey: ["lab-courses", params],
-    queryFn: () => labCourseService.findAll(params),
+    queryKey: ["lab-courses", "filter", params],
+    queryFn: () => labCourseService.filter(params),
   });
 };
 
@@ -22,17 +21,19 @@ export const getLabCourseByIdQueryOptions = (id: number) => {
 };
 
 // Hooks
-type UseLabCoursesOptions = {
-  params?: {
+type UseLabCoursesFilterOptions = {
+  params: {
+    search?: string;
     semesterCode?: string;
-    subjectAbbreviation?: string;
+    page?: number;
+    pageSize?: number;
   };
-  queryConfig?: QueryConfig<typeof getAllLabCoursesQueryOptions>;
+  queryConfig?: QueryConfig<typeof getLabCoursesFilterQueryOptions>;
 };
 
-export const useLabCourses = ({ params, queryConfig }: UseLabCoursesOptions = {}) => {
+export const useLabCoursesFilter = ({ params, queryConfig }: UseLabCoursesFilterOptions) => {
   return useQuery({
-    ...getAllLabCoursesQueryOptions(params),
+    ...getLabCoursesFilterQueryOptions(params),
     ...queryConfig,
   });
 };
