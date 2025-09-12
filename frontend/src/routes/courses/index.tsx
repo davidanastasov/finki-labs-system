@@ -185,7 +185,7 @@ function RouteComponent() {
           <CourseTable
             courses={
               courses?.items.map((course) => ({
-                id: course.id.toString(),
+                id: course.id,
                 code: course.subject.code,
                 name: course.subject.name,
                 semester: course.semester.type,

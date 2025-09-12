@@ -1,3 +1,5 @@
+import type { PaginatedResponse } from "@/services/apiClient";
+
 export type LabCourseStatus = "ACTIVE" | "INACTIVE";
 
 export type FilterLabCoursesParams = {
@@ -75,4 +77,27 @@ export type UpdateLabCourseRequest = {
   professorIds: string[];
   assistantIds?: string[];
   status?: LabCourseStatus;
+};
+
+export type FilterCourseStudentParams = {
+  search?: string;
+  studyProgramCode?: string;
+  page?: number;
+  pageSize?: number;
+};
+
+export type FilterCourseStudentResponse = PaginatedResponse<{
+  index: string;
+  email: string;
+  name: string;
+  lastName: string;
+  parentName: string;
+  studyProgram: {
+    code: string;
+    name: string;
+  };
+}>;
+
+export type AddStudentsToLabCourseRequest = {
+  studentIds: string[];
 };

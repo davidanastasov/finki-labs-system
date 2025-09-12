@@ -23,7 +23,7 @@ import { TableSkeleton } from "@/components/loaders/table-skeleton";
 import { capitalize } from "@/lib/utils";
 
 export interface Course {
-  id: string;
+  id: number;
   code: string;
   name: string;
   semester: string;

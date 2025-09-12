@@ -8,8 +8,15 @@ import { getLabCourseByIdQueryOptions } from "@/data/labCourse";
 import { capitalize } from "@/lib/utils";
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "@/lib/constants";
 
+const paramsSchema = z.object({
+  courseId: z.coerce.number().int().positive(),
+});
+
 export const Route = createFileRoute("/courses/$courseId")({
   component: RouteComponent,
+  params: {
+    parse: (params) => paramsSchema.parse(params),
+  },
   loader: ({ context: { queryClient }, params }) => {
     const courseId = z.number().parse(Number(params.courseId));
     return queryClient.ensureQueryData(getLabCourseByIdQueryOptions(courseId));
@@ -18,7 +25,7 @@ export const Route = createFileRoute("/courses/$courseId")({
 
 export default function RouteComponent() {
   const { courseId } = Route.useParams();
-  const { data: course } = useSuspenseQuery(getLabCourseByIdQueryOptions(Number(courseId)));
+  const { data: course } = useSuspenseQuery(getLabCourseByIdQueryOptions(courseId));
 
   const getActiveTab = () => {
     return "overview";
@@ -44,6 +51,13 @@ export default function RouteComponent() {
         <TabsList>
           <Link to="/courses/$courseId" params={{ courseId }}>
             <TabsTrigger value="overview">Overview</TabsTrigger>
+          </Link>
+          <Link
+            to="/courses/$courseId/students"
+            search={{ page: DEFAULT_PAGE, pageSize: DEFAULT_PAGE_SIZE }}
+            params={{ courseId: courseId }}
+          >
+            <TabsTrigger value="students">Students</TabsTrigger>
           </Link>
         </TabsList>
 

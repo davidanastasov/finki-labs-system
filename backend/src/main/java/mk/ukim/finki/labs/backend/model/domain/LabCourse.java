@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -36,6 +37,9 @@ public class LabCourse {
 
     @ManyToMany
     private List<Professor> assistants;
+
+    @OneToMany(mappedBy = "labCourse", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LabCourseStudent> labCourseStudents = new ArrayList<>();
 
     @Column(length = 1000)
     private String description;

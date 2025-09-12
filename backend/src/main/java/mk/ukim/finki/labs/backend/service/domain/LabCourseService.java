@@ -1,6 +1,7 @@
 package mk.ukim.finki.labs.backend.service.domain;
 
 import mk.ukim.finki.labs.backend.model.domain.LabCourse;
+import mk.ukim.finki.labs.backend.model.domain.Student;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -17,7 +18,13 @@ public interface LabCourseService {
     Optional<LabCourse> save(LabCourse labCourse);
     
     Optional<LabCourse> update(Long id, LabCourse labCourse);
-    
+
     void deleteById(Long id);
+
+    Page<Student> filterStudents(Long courseId, String search, String studyProgramCode, Integer page, Integer pageSize);
+
+    void addStudentsToCourse(Long courseId, List<String> studentIds);
+
+    void removeStudentFromCourse(Long courseId, String studentId);
 
 }

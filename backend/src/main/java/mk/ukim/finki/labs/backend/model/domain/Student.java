@@ -1,12 +1,11 @@
 package mk.ukim.finki.labs.backend.model.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.Hibernate;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -31,6 +30,18 @@ public class Student {
 
     @ManyToOne
     private StudyProgram studyProgram;
+
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LabCourseStudent> courseEnrollments = new ArrayList<>();
+
+    public Student(String index, String email, String name, String lastName, String parentName, StudyProgram studyProgram) {
+        this.index = index;
+        this.email = email;
+        this.name = name;
+        this.lastName = lastName;
+        this.parentName = parentName;
+        this.studyProgram = studyProgram;
+    }
 
     @Override
     public boolean equals(Object o) {

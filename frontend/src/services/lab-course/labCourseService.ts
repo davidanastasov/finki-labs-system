@@ -1,5 +1,8 @@
 import type {
+  AddStudentsToLabCourseRequest,
   CreateLabCourseRequest,
+  FilterCourseStudentParams,
+  FilterCourseStudentResponse,
   FilterLabCoursesParams,
   FilterLabCoursesResponse,
   LabCourseResponse,
@@ -36,4 +39,33 @@ export const update = async (data: UpdateLabCourseRequest) => {
 
 export const deleteById = async (id: number) => {
   await apiClient.delete(`api/lab-courses/${id}`);
+};
+
+export async function filterCourseStudents(
+  courseId: number,
+  { search, studyProgramCode, page, pageSize }: FilterCourseStudentParams,
+) {
+  const searchParams = new URLSearchParams();
+
+  if (search) searchParams.set("search", search);
+  if (studyProgramCode) searchParams.set("studyProgramCode", studyProgramCode);
+  if (page !== undefined) searchParams.set("page", String(page));
+  if (pageSize !== undefined) searchParams.set("pageSize", String(pageSize));
+
+  return await apiClient
+    .get<FilterCourseStudentResponse>(`api/lab-courses/${courseId}/students/filter`, {
+      searchParams,
+    })
+    .json();
+}
+
+export const addStudentsToLabCourse = async (
+  courseId: number,
+  data: AddStudentsToLabCourseRequest,
+) => {
+  return await apiClient.post(`api/lab-courses/${courseId}/students`, { json: data }).json();
+};
+
+export const useRemoveStudentFromCourse = async (courseId: number, studentIndex: string) => {
+  return await apiClient.delete(`api/lab-courses/${courseId}/students/${studentIndex}`).json();
 };

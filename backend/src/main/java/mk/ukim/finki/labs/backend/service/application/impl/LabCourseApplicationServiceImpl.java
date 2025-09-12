@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import mk.ukim.finki.labs.backend.dto.PaginatedList;
 import mk.ukim.finki.labs.backend.dto.lab_course.CreateLabCourseDTO;
 import mk.ukim.finki.labs.backend.dto.lab_course.LabCourseDTO;
+import mk.ukim.finki.labs.backend.dto.lab_course.LabCourseStudentDTO;
 import mk.ukim.finki.labs.backend.dto.lab_course.UpdateLabCourseDTO;
 import mk.ukim.finki.labs.backend.repository.JoinedSubjectRepository;
 import mk.ukim.finki.labs.backend.repository.ProfessorRepository;
@@ -100,5 +101,27 @@ public class LabCourseApplicationServiceImpl implements LabCourseApplicationServ
     @Override
     public void deleteById(Long id) {
         labCourseService.deleteById(id);
+    }
+
+    @Override
+    public PaginatedList<LabCourseStudentDTO> filterStudents(Long courseId, String search, String studyProgramCode, Integer page, Integer pageSize) {
+        var students = labCourseService.filterStudents(courseId, search, studyProgramCode, page, pageSize);
+
+        return new PaginatedList<>(
+                students.getTotalElements(),
+                students.stream()
+                        .map(LabCourseStudentDTO::from)
+                        .collect(Collectors.toList())
+        );
+    }
+
+    @Override
+    public void addStudentsToCourse(Long courseId, List<String> studentIds) {
+        labCourseService.addStudentsToCourse(courseId, studentIds);
+    }
+
+    @Override
+    public void removeStudentFromCourse(Long courseId, String studentId) {
+        labCourseService.removeStudentFromCourse(courseId, studentId);
     }
 }

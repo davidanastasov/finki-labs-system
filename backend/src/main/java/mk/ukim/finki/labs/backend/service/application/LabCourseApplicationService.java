@@ -3,7 +3,9 @@ package mk.ukim.finki.labs.backend.service.application;
 import mk.ukim.finki.labs.backend.dto.PaginatedList;
 import mk.ukim.finki.labs.backend.dto.lab_course.CreateLabCourseDTO;
 import mk.ukim.finki.labs.backend.dto.lab_course.LabCourseDTO;
+import mk.ukim.finki.labs.backend.dto.lab_course.LabCourseStudentDTO;
 import mk.ukim.finki.labs.backend.dto.lab_course.UpdateLabCourseDTO;
+import mk.ukim.finki.labs.backend.dto.student.StudentDTO;
 
 import java.util.List;
 
@@ -18,6 +20,12 @@ public interface LabCourseApplicationService {
     LabCourseDTO create(CreateLabCourseDTO createDto);
     
     LabCourseDTO update(Long id, UpdateLabCourseDTO updateDto);
-    
+
     void deleteById(Long id);
+
+    PaginatedList<LabCourseStudentDTO> filterStudents(Long courseId, String search, String studyProgramCode, Integer page, Integer pageSize);
+
+    void addStudentsToCourse(Long courseId, List<String> studentIds);
+
+    void removeStudentFromCourse(Long courseId, String studentId);
 }
