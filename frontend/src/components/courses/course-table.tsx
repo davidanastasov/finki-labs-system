@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Edit, MoreHorizontal, Trash2, Users } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
+import { Edit, Eye, MoreHorizontal, Trash2, Users } from "lucide-react";
 import { CourseDialog } from "./course-form-dialog";
 import { CourseDeleteConfirmDialog } from "./course-delete-confirm-dialog";
 import { Button } from "@/components/ui/button";
@@ -40,10 +41,19 @@ interface CourseTableProps {
 }
 
 export function CourseTable({ courses, isLoading = false, pageSize = 10 }: CourseTableProps) {
+  const navigate = useNavigate();
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [showEdit, setShowEdit] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [courseToDelete, setCourseToDelete] = useState<Course | null>(null);
+
+  const handleView = (course: Course) => {
+    navigate({ to: "/courses/$courseId", params: { courseId: course.id } });
+  };
+
+  const handleRowClick = (course: Course) => {
+    handleView(course);
+  };
 
   const handleEdit = (course: Course) => {
     setSelectedCourse(course);
@@ -93,8 +103,9 @@ export function CourseTable({ courses, isLoading = false, pageSize = 10 }: Cours
             ) : (
               courses.map((course) => (
                 <TableRow
-                  key={`${course.id}-${course.academicYear}`}
+                  key={course.id}
                   className="cursor-pointer hover:bg-muted/50"
+                  onClick={() => handleRowClick(course)}
                 >
                   <TableCell className="font-medium">{course.code}</TableCell>
                   <TableCell>{course.name}</TableCell>
@@ -135,12 +146,29 @@ export function CourseTable({ courses, isLoading = false, pageSize = 10 }: Cours
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleEdit(course)}>
+                        <DropdownMenuItem
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleView(course);
+                          }}
+                        >
+                          <Eye className="mr-2 h-4 w-4" />
+                          View Course
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEdit(course);
+                          }}
+                        >
                           <Edit className="mr-2 h-4 w-4" />
                           Edit Course
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onClick={() => handleDeleteClick(course)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteClick(course);
+                          }}
                           className="text-destructive"
                         >
                           <Trash2 className="mr-2 h-4 w-4" />
