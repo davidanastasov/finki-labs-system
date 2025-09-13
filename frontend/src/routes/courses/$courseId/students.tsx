@@ -11,6 +11,8 @@ import { useDebouncedSearch } from "@/hooks/use-debounced-search";
 import { useStudyPrograms } from "@/data/studyProgram";
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from "@/lib/constants";
 import { AutoComplete } from "@/components/ui/autocomplete";
+import PaginationControl from "@/components/pagination/pagination-control";
+import PaginationSizeSelect from "@/components/pagination/pagination-size-select";
 import {
   filterCourseStudentsQueryOptions,
   useCourseStudents,
@@ -38,6 +40,7 @@ export const Route = createFileRoute("/courses/$courseId/students")({
     parse: (params) => paramsSchema.parse(params),
   },
   validateSearch: (search) => studentsSearchSchema.parse(search),
+  loaderDeps: ({ search }) => search,
   loader: ({ params, context: { queryClient }, deps }) => {
     queryClient.prefetchQuery(filterCourseStudentsQueryOptions(params.courseId, deps));
   },
@@ -159,14 +162,34 @@ function RouteComponent() {
               </div>
 
               <Button
-                variant="ghostDestructive"
+                variant="outline"
                 size="icon"
                 onClick={() => setSelectedStudentToRemove(student)}
+                className="text-red-600 hover:text-red-700 hover:bg-red-50"
               >
                 <UserX className="h-4 w-4" />
               </Button>
             </div>
           ))}
+        </div>
+
+        <div className="mt-4 flex justify-between items-center flex-wrap">
+          <PaginationSizeSelect
+            defaultValue={searchParams.pageSize}
+            onChange={(size) =>
+              navigate({
+                search: (prev) => ({ ...prev, pageSize: size, page: 1 }),
+                replace: true,
+              })
+            }
+          />
+
+          <PaginationControl
+            totalItems={enrolledStudents?.count ?? 0}
+            itemsPerPage={searchParams.pageSize}
+            defaultPage={searchParams.page}
+            onChange={(page) => navigate({ search: (prev) => ({ ...prev, page }), replace: true })}
+          />
         </div>
       </CardContent>
 

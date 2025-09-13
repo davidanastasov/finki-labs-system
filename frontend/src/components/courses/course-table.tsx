@@ -47,6 +47,10 @@ export function CourseTable({ courses, isLoading = false, pageSize = 10 }: Cours
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [courseToDelete, setCourseToDelete] = useState<Course | null>(null);
 
+  const getAdditionalProfessorsCount = (course: Course) => {
+    return Math.max(course.professors.length - 4, 0) + course.assistants.length;
+  };
+
   const handleView = (course: Course) => {
     navigate({ to: "/courses/$courseId", params: { courseId: course.id } });
   };
@@ -118,14 +122,17 @@ export function CourseTable({ courses, isLoading = false, pageSize = 10 }: Cours
                           {prof}
                         </Badge>
                       ))}
-                      <Badge variant="outline" className="text-xs">
-                        +{Math.max(course.professors.length - 4, 0) + course.assistants.length}
-                      </Badge>
+                      {getAdditionalProfessorsCount(course) > 0 && (
+                        <Badge variant="outline" className="text-xs">
+                          +{getAdditionalProfessorsCount(course)}
+                        </Badge>
+                      )}
                     </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1">
-                      <Users className="h-4 w-4 text-muted-foreground" />-
+                      <Users className="h-4 w-4 text-muted-foreground" />
+                      {course.enrolledStudents}
                     </div>
                   </TableCell>
                   <TableCell>

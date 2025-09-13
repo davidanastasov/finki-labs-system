@@ -14,7 +14,8 @@ public record LabCourseDTO(
         String description,
         List<LabCourseProfessorDTO> professors,
         List<LabCourseProfessorDTO> assistants,
-        LabCourseStatus status
+        LabCourseStatus status,
+        Integer enrolledStudentsCount
 ) {
 
     public static LabCourseDTO from(LabCourse labCourse) {
@@ -35,7 +36,8 @@ public record LabCourseDTO(
                         .stream()
                         .map(professor -> new LabCourseProfessorDTO(professor.getId(), professor.getName()))
                         .toList(),
-                labCourse.getStatus()
+                labCourse.getStatus(),
+                labCourse.getLabCourseStudents() != null ? labCourse.getLabCourseStudents().size() : 0
         );
     }
 

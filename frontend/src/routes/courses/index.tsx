@@ -132,7 +132,17 @@ function RouteComponent() {
             <CardTitle className="text-sm font-medium">Students</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">-</div>
+            <LoadingWrapper
+              isLoading={isCoursesLoading}
+              fallback={<Skeleton className="h-8 w-16" />}
+            >
+              <div className="text-2xl font-bold">
+                {courses?.items.reduce(
+                  (total, course) => total + course.enrolledStudentsCount,
+                  0,
+                ) ?? 0}
+              </div>
+            </LoadingWrapper>
             <p className="text-xs text-muted-foreground">Enrolled students</p>
           </CardContent>
         </Card>
@@ -192,7 +202,7 @@ function RouteComponent() {
                 academicYear: course.semester.year,
                 professors: course.professors.map((p) => p.name),
                 assistants: course.assistants.map((a) => a.name),
-                enrolledStudents: 0,
+                enrolledStudents: course.enrolledStudentsCount,
                 status: course.status,
               })) || []
             }

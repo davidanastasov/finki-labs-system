@@ -33,6 +33,7 @@ export type FilterLabCoursesResponse = {
       name: string;
     }[];
     status: LabCourseStatus;
+    enrolledStudentsCount: number;
   }[];
 };
 
@@ -58,6 +59,7 @@ export type LabCourseResponse = {
     name: string;
   }[];
   status: LabCourseStatus;
+  enrolledStudentsCount: number;
 };
 
 export type CreateLabCourseRequest = {

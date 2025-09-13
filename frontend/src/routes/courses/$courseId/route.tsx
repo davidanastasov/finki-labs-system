@@ -29,7 +29,7 @@ export default function RouteComponent() {
 
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const getActiveTab = () => {
-    if (pathname.includes("/labs")) return "labs";
+    if (pathname.includes("/exercises")) return "exercises";
     if (pathname.includes("/students")) return "students";
     return "overview";
   };
@@ -56,7 +56,7 @@ export default function RouteComponent() {
             <TabsTrigger value="overview">Overview</TabsTrigger>
           </Link>
           <Link to="/courses/$courseId/exercises" params={{ courseId }}>
-            <TabsTrigger value="labs">Exercises</TabsTrigger>
+            <TabsTrigger value="exercises">Exercises</TabsTrigger>
           </Link>
           <Link
             to="/courses/$courseId/students"
