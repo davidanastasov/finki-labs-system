@@ -42,9 +42,9 @@ public class ExerciseApplicationServiceImpl implements ExerciseApplicationServic
     }
     
     @Override
-    public ExerciseDetailsDTO createWithFiles(CreateExerciseDTO createDto, List<MultipartFile> files) {
-        var labCourse = labCourseService.findById(createDto.labCourseId())
-                .orElseThrow(() -> new IllegalArgumentException("Lab course with id " + createDto.labCourseId() + " not found"));
+    public ExerciseDetailsDTO createWithFiles(Long courseId, CreateExerciseDTO createDto, List<MultipartFile> files) {
+        var labCourse = labCourseService.findById(courseId)
+                .orElseThrow(() -> new IllegalArgumentException("Lab course with id " + courseId + " not found"));
         
         var exercise = createDto.toExercise(labCourse);
         

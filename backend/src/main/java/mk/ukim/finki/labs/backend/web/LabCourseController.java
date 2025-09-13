@@ -5,12 +5,18 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import mk.ukim.finki.labs.backend.dto.PaginatedList;
+import mk.ukim.finki.labs.backend.dto.exercise.CreateExerciseDTO;
+import mk.ukim.finki.labs.backend.dto.exercise.ExerciseDTO;
+import mk.ukim.finki.labs.backend.dto.exercise.ExerciseDetailsDTO;
 import mk.ukim.finki.labs.backend.dto.lab_course.*;
+import mk.ukim.finki.labs.backend.service.application.ExerciseApplicationService;
 import mk.ukim.finki.labs.backend.service.application.LabCourseApplicationService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -21,6 +27,7 @@ import java.util.List;
 public class LabCourseController {
     
     private final LabCourseApplicationService labCourseApplicationService;
+    private final ExerciseApplicationService exerciseApplicationService;
     
     @GetMapping("/filter")
     public ResponseEntity<PaginatedList<LabCourseDTO>> filter(
@@ -89,4 +96,21 @@ public class LabCourseController {
         labCourseApplicationService.removeStudentFromCourse(courseId, studentId);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("{courseId}/exercises")
+    public ResponseEntity<List<ExerciseDTO>> findExercisesByLabCourseId(@PathVariable Long courseId) {
+        var exercises = exerciseApplicationService.findByLabCourseId(courseId);
+        return ResponseEntity.ok(exercises);
+    }
+
+    @PostMapping(value= "{courseId}/exercises", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ExerciseDetailsDTO> createExerciseForLabCourse(
+            @PathVariable Long courseId,
+            @Valid @ModelAttribute CreateExerciseDTO createDto,
+            @RequestParam(value = "files", required = false) List<MultipartFile> files) {
+
+        var exercise = exerciseApplicationService.createWithFiles(courseId, createDto, files);
+        return ResponseEntity.status(HttpStatus.CREATED).body(exercise);
+    }
+
 }

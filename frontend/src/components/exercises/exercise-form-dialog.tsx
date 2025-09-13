@@ -28,7 +28,7 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
-import { useCreateExercise, useExerciseById, useUpdateExercise } from "@/data/exercise";
+import { useCreateExercise, useExerciseById, useUpdateExercise } from "@/data/labCourseExercise";
 import { ExerciseStatus } from "@/services/exercise/models";
 import { formatDateRange } from "@/lib/date";
 import {
@@ -75,10 +75,11 @@ export function ExerciseDialog({
   const [filesToRemove, setFilesToRemove] = useState<string[]>([]);
 
   const { data: exerciseData, isLoading: isLoadingExercise } = useExerciseById(exerciseId!, {
+    courseId: labCourseId,
     queryConfig: { enabled: isEditMode && open },
   });
 
-  const createExerciseMutation = useCreateExercise();
+  const createExerciseMutation = useCreateExercise(labCourseId);
   const updateExerciseMutation = useUpdateExercise();
 
   const form = useForm<FormData>({

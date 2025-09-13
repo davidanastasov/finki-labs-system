@@ -14,7 +14,7 @@ public interface ExerciseApplicationService {
     
     ExerciseDetailsDTO findById(Long id);
 
-    ExerciseDetailsDTO createWithFiles(CreateExerciseDTO createDto, List<MultipartFile> files);
+    ExerciseDetailsDTO createWithFiles(Long courseId, CreateExerciseDTO createDto, List<MultipartFile> files);
 
     ExerciseDetailsDTO updateWithFiles(Long id, UpdateExerciseDTO updateDto, List<MultipartFile> files, List<String> removeFiles);
     

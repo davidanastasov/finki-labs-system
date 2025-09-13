@@ -2,15 +2,12 @@ package mk.ukim.finki.labs.backend.web;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import mk.ukim.finki.labs.backend.dto.exercise.CreateExerciseDTO;
-import mk.ukim.finki.labs.backend.dto.exercise.ExerciseDTO;
 import mk.ukim.finki.labs.backend.dto.exercise.ExerciseDetailsDTO;
 import mk.ukim.finki.labs.backend.dto.exercise.UpdateExerciseDTO;
 import mk.ukim.finki.labs.backend.service.application.ExerciseApplicationService;
 import mk.ukim.finki.labs.backend.service.domain.ExerciseFileService;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -27,26 +24,11 @@ public class ExerciseController {
     
     private final ExerciseApplicationService exerciseApplicationService;
     private final ExerciseFileService fileService;
-    
-    @GetMapping("/lab-course/{labCourseId}")
-    public ResponseEntity<List<ExerciseDTO>> findByLabCourseId(@PathVariable Long labCourseId) {
-        var exercises = exerciseApplicationService.findByLabCourseId(labCourseId);
-        return ResponseEntity.ok(exercises);
-    }
-    
+
     @GetMapping("/{id}")
     public ResponseEntity<ExerciseDetailsDTO> findById(@PathVariable Long id) {
         var exercise = exerciseApplicationService.findById(id);
         return ResponseEntity.ok(exercise);
-    }
-    
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ExerciseDetailsDTO> create(
-            @Valid @ModelAttribute CreateExerciseDTO createDto,
-            @RequestParam(value = "files", required = false) List<MultipartFile> files) {
-
-        var exercise = exerciseApplicationService.createWithFiles(createDto, files);
-        return ResponseEntity.status(HttpStatus.CREATED).body(exercise);
     }
     
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

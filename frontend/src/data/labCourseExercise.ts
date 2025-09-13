@@ -4,16 +4,16 @@ import type { CreateExerciseRequest, UpdateExerciseRequest } from "@/services/ex
 import exerciseService from "@/services/exercise";
 
 // Query options
-export const getExercisesByLabCourseIdQueryOptions = (labCourseId: number) => {
+export const getExercisesByLabCourseIdQueryOptions = (courseId: number) => {
   return queryOptions({
-    queryKey: ["exercises", "lab-course", labCourseId],
-    queryFn: () => exerciseService.findByLabCourseId(labCourseId),
+    queryKey: ["lab-courses", courseId, "exercises"],
+    queryFn: () => exerciseService.findByLabCourseId(courseId),
   });
 };
 
-export const getExerciseByIdQueryOptions = (id: number) => {
+export const getExerciseByIdQueryOptions = (courseId: number, id: number) => {
   return queryOptions({
-    queryKey: ["exercises", id],
+    queryKey: ["lab-courses", courseId, "exercises", id],
     queryFn: () => exerciseService.findById(id),
   });
 };
@@ -34,12 +34,13 @@ export const useExercisesByLabCourseId = (
 };
 
 type UseExerciseByIdOptions = {
+  courseId: number;
   queryConfig?: QueryConfig<typeof getExerciseByIdQueryOptions>;
 };
 
-export const useExerciseById = (id: number, { queryConfig }: UseExerciseByIdOptions = {}) => {
+export const useExerciseById = (id: number, { courseId, queryConfig }: UseExerciseByIdOptions) => {
   return useQuery({
-    ...getExerciseByIdQueryOptions(id),
+    ...getExerciseByIdQueryOptions(courseId, id),
     ...queryConfig,
   });
 };
@@ -50,16 +51,14 @@ type CreateExerciseWithFilesData = {
   files?: File[];
 };
 
-export const useCreateExercise = () => {
+export const useCreateExercise = (courseId: number) => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({ data, files }: CreateExerciseWithFilesData) =>
-      exerciseService.create(data, files),
-    onSuccess: (newExercise) => {
-      queryClient.invalidateQueries({
-        queryKey: ["exercises", "lab-course", newExercise.labCourseId],
-      });
+      exerciseService.create(courseId, data, files),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["lab-courses", courseId, "exercises"] });
     },
   });
 };
@@ -78,20 +77,19 @@ export const useUpdateExercise = () => {
       exerciseService.update(data, files, removeFiles),
     onSuccess: (updatedExercise) => {
       queryClient.invalidateQueries({
-        queryKey: ["exercises", "lab-course", updatedExercise.labCourseId],
+        queryKey: ["lab-courses", updatedExercise.labCourseId, "exercises"],
       });
-      queryClient.invalidateQueries({ queryKey: ["exercises", updatedExercise.id] });
     },
   });
 };
 
-export const useDeleteExercise = () => {
+export const useDeleteExercise = (courseId: number) => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (id: number) => exerciseService.deleteById(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["exercises"] });
+      queryClient.invalidateQueries({ queryKey: ["lab-courses", courseId, "exercises"] });
     },
   });
 };

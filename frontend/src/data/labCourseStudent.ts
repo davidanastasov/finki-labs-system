@@ -8,7 +8,7 @@ export const filterCourseStudentsQueryOptions = (
   params: Parameters<typeof labCourseService.filterCourseStudents>[1],
 ) => {
   return queryOptions({
-    queryKey: ["course", courseId, "students", params],
+    queryKey: ["lab-courses", courseId, "students", params],
     queryFn: () => labCourseService.filterCourseStudents(courseId, params),
     gcTime: 5 * 1000, // 5 seconds
   });
@@ -44,7 +44,7 @@ export const useAddStudentsToLabCourse = (courseId: number) => {
     mutationFn: (data: AddStudentsToLabCourseRequest) =>
       labCourseService.addStudentsToLabCourse(courseId, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["course", courseId, "students"] });
+      queryClient.invalidateQueries({ queryKey: ["lab-courses", courseId, "students"] });
     },
   });
 };
@@ -56,7 +56,7 @@ export const useRemoveStudentFromCourse = (courseId: number) => {
     mutationFn: (studentIndex: string) =>
       labCourseService.useRemoveStudentFromCourse(courseId, studentIndex),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["course", courseId, "students"] });
+      queryClient.invalidateQueries({ queryKey: ["lab-courses", courseId, "students"] });
     },
   });
 };

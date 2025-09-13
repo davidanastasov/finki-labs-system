@@ -54,6 +54,7 @@ export function ConfirmDialog<T>({
           <AlertDialogAction
             onClick={handleConfirm}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            autoFocus
           >
             {confirmLabel}
           </AlertDialogAction>

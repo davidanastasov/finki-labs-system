@@ -23,7 +23,6 @@ export interface CreateExerciseRequest {
   labDate?: string;
   dueDate?: string;
   totalPoints: number;
-  labCourseId: number;
   status?: ExerciseStatus;
 }
 

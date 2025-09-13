@@ -5,7 +5,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import type { ExerciseResponse } from "@/services/exercise/models";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { getExercisesByLabCourseIdQueryOptions, useDeleteExercise } from "@/data/exercise";
+import { getExercisesByLabCourseIdQueryOptions, useDeleteExercise } from "@/data/labCourseExercise";
 import { ExerciseDialog } from "@/components/exercises/exercise-form-dialog";
 import { ExerciseList } from "@/components/exercises/exercise-list";
 import { ConfirmDialog } from "@/components/common/confirm-dialog";
@@ -26,7 +26,7 @@ function CourseLabsComponent() {
   const [deletingExercise, setDeletingExercise] = useState<ExerciseResponse | null>(null);
 
   const { data: exercises } = useSuspenseQuery(getExercisesByLabCourseIdQueryOptions(courseId));
-  const deleteExerciseMutation = useDeleteExercise();
+  const deleteExerciseMutation = useDeleteExercise(courseId);
 
   const handleEdit = (exercise: ExerciseResponse) => {
     setEditingExercise(exercise);
