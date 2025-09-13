@@ -1,4 +1,4 @@
-import { Link, Outlet, createFileRoute } from "@tanstack/react-router";
+import { Link, Outlet, createFileRoute, useRouterState } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import z from "zod";
@@ -27,7 +27,10 @@ export default function RouteComponent() {
   const { courseId } = Route.useParams();
   const { data: course } = useSuspenseQuery(getLabCourseByIdQueryOptions(courseId));
 
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   const getActiveTab = () => {
+    if (pathname.includes("/labs")) return "labs";
+    if (pathname.includes("/students")) return "students";
     return "overview";
   };
 
@@ -52,10 +55,13 @@ export default function RouteComponent() {
           <Link to="/courses/$courseId" params={{ courseId }}>
             <TabsTrigger value="overview">Overview</TabsTrigger>
           </Link>
+          <Link to="/courses/$courseId/exercises" params={{ courseId }}>
+            <TabsTrigger value="labs">Exercises</TabsTrigger>
+          </Link>
           <Link
             to="/courses/$courseId/students"
             search={{ page: DEFAULT_PAGE, pageSize: DEFAULT_PAGE_SIZE }}
-            params={{ courseId: courseId }}
+            params={{ courseId }}
           >
             <TabsTrigger value="students">Students</TabsTrigger>
           </Link>
