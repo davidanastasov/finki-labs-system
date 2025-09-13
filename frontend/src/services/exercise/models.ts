@@ -1,3 +1,10 @@
+export interface ExerciseFile {
+  id: string;
+  fileName: string;
+  size: number;
+  contentType: string;
+}
+
 export interface ExerciseResponse {
   id: number;
   title: string;
@@ -5,9 +12,9 @@ export interface ExerciseResponse {
   labDate?: string;
   dueDate?: string;
   totalPoints: number;
-  filePath?: string;
   labCourseId: number;
   status: ExerciseStatus;
+  files: ExerciseFile[];
 }
 
 export interface CreateExerciseRequest {
@@ -16,7 +23,6 @@ export interface CreateExerciseRequest {
   labDate?: string;
   dueDate?: string;
   totalPoints: number;
-  filePath?: string;
   labCourseId: number;
   status?: ExerciseStatus;
 }
@@ -28,7 +34,6 @@ export interface UpdateExerciseRequest {
   labDate?: string;
   dueDate?: string;
   totalPoints?: number;
-  filePath?: string;
   status?: ExerciseStatus;
 }
 

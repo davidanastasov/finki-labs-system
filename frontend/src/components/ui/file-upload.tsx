@@ -18,7 +18,7 @@ import {
   type DropzoneOptions,
 } from 'react-dropzone'
 import { toast } from 'sonner'
-import { Trash2 as RemoveIcon } from 'lucide-react'
+import { XIcon } from 'lucide-react'
 import { buttonVariants } from '@/components/ui/button'
 
 type DirectionOptions = 'rtl' | 'ltr' | undefined
@@ -305,7 +305,7 @@ export const FileUploaderItem = forwardRef<
         onClick={() => removeFileFromSet(index)}
       >
         <span className="sr-only">remove item {index}</span>
-        <RemoveIcon className="w-4 h-4 hover:stroke-destructive duration-200 ease-in-out" />
+        <XIcon className="w-4 h-4 hover:stroke-destructive duration-200 ease-in-out" />
       </button>
     </div>
   )

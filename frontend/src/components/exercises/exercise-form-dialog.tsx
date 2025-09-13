@@ -3,9 +3,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { format } from "date-fns";
-import { CalendarIcon, CloudUpload, FlaskConical, Paperclip } from "lucide-react";
+import { CalendarIcon, FlaskConical } from "lucide-react";
+import { Separator } from "../ui/separator";
+import { ExerciseFileManager } from "./exercise-file-manager";
 import type { DateRange } from "react-day-picker";
-
 import {
   Dialog,
   DialogContent,
@@ -24,15 +25,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  FileInput,
-  FileUploader,
-  FileUploaderContent,
-  FileUploaderItem,
-} from "@/components/ui/file-upload";
 import { cn } from "@/lib/utils";
 import { useCreateExercise, useExerciseById, useUpdateExercise } from "@/data/exercise";
 import { ExerciseStatus } from "@/services/exercise/models";
@@ -55,7 +49,6 @@ const formSchema = z
     totalPoints: z
       .number({ error: "Total points is required" })
       .min(1, "Total points must be at least 1"),
-    filePath: z.string().optional(),
     status: z.enum(ExerciseStatus, { error: "Status is required" }),
   })
   .refine((data) => data.labDate <= data.dueDate, {
@@ -77,8 +70,9 @@ export function ExerciseDialog({
   onOpenChange: setOpen,
 }: ExerciseDialogProps) {
   const isEditMode = exerciseId !== undefined;
-  const [files, setFiles] = useState<File[] | null>(null);
   const [dateRangeOpen, setDateRangeOpen] = useState(false);
+  const [files, setFiles] = useState<File[] | null>(null);
+  const [filesToRemove, setFilesToRemove] = useState<string[]>([]);
 
   const { data: exerciseData, isLoading: isLoadingExercise } = useExerciseById(exerciseId!, {
     queryConfig: { enabled: isEditMode && open },
@@ -95,7 +89,6 @@ export function ExerciseDialog({
       labDate: undefined,
       dueDate: undefined,
       totalPoints: undefined,
-      filePath: "",
       status: ExerciseStatus.DRAFT,
     },
   });
@@ -103,12 +96,6 @@ export function ExerciseDialog({
   const dateRange: DateRange = {
     from: form.watch("labDate"),
     to: form.watch("dueDate"),
-  };
-
-  const dropZoneConfig = {
-    maxFiles: 5,
-    maxSize: 1024 * 1024 * 4,
-    multiple: true,
   };
 
   // Load exercise data for edit mode
@@ -123,9 +110,11 @@ export function ExerciseDialog({
         labDate,
         dueDate,
         totalPoints: exerciseData.totalPoints,
-        filePath: exerciseData.filePath || "",
         status: exerciseData.status,
       });
+
+      setFiles(null);
+      setFilesToRemove([]);
     }
   }, [exerciseData, form, isEditMode, open]);
 
@@ -141,7 +130,6 @@ export function ExerciseDialog({
         labDate,
         dueDate,
         totalPoints: exerciseData.totalPoints,
-        filePath: exerciseData.filePath || "",
         status: exerciseData.status,
       });
     } else {
@@ -152,11 +140,12 @@ export function ExerciseDialog({
         labDate: undefined,
         dueDate: undefined,
         totalPoints: undefined,
-        filePath: "",
         status: ExerciseStatus.DRAFT,
       });
     }
+
     setFiles(null);
+    setFilesToRemove([]);
   };
 
   const handleSubmit = (data: FormData) => {
@@ -168,7 +157,6 @@ export function ExerciseDialog({
       labDate: format(data.labDate, "yyyy-MM-dd"),
       dueDate: format(data.dueDate, "yyyy-MM-dd"),
       totalPoints: data.totalPoints,
-      filePath: data.filePath || undefined,
       labCourseId,
       status: data.status,
     };
@@ -176,8 +164,12 @@ export function ExerciseDialog({
     if (isEditMode && exerciseId) {
       updateExerciseMutation.mutate(
         {
-          id: exerciseId,
-          ...requestData,
+          data: {
+            id: exerciseId,
+            ...requestData,
+          },
+          files: files || undefined,
+          removeFiles: filesToRemove.length > 0 ? filesToRemove : undefined,
         },
         {
           onSuccess: () => {
@@ -193,19 +185,25 @@ export function ExerciseDialog({
         },
       );
     } else {
-      createExerciseMutation.mutate(requestData, {
-        onSuccess: () => {
-          setOpen?.(false);
-          resetForm();
+      createExerciseMutation.mutate(
+        {
+          data: requestData,
+          files: files || undefined,
         },
-        onError: (error: any) => {
-          const errorMessage = error?.message || "Failed to create exercise";
-          form.setError("root", {
-            type: "server",
-            message: errorMessage,
-          });
+        {
+          onSuccess: () => {
+            setOpen?.(false);
+            resetForm();
+          },
+          onError: (error: any) => {
+            const errorMessage = error?.message || "Failed to create exercise";
+            form.setError("root", {
+              type: "server",
+              message: errorMessage,
+            });
+          },
         },
-      });
+      );
     }
   };
 
@@ -220,7 +218,7 @@ export function ExerciseDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="!max-w-6xl min-h-[60vh] overflow-y-auto flex flex-col">
+      <DialogContent className="!max-w-6xl min-h-[60vh] max-h-[90vh] overflow-y-auto flex flex-col">
         <DialogHeader>
           <DialogTitle>{isEditMode ? "Edit Exercise" : "Create New Lab Exercise"}</DialogTitle>
           <DialogDescription>
@@ -240,9 +238,9 @@ export function ExerciseDialog({
               onSubmit={form.handleSubmit(handleSubmit)}
               className="flex flex-1 flex-col h-full gap-6"
             >
-              <div className="grid grid-cols-3 gap-6 flex-1">
+              <div className="grid grid-cols-[1fr_auto_2fr] gap-6 flex-1">
                 {/* Left Column - 1/3 width */}
-                <div className="col-span-1 space-y-4">
+                <div className="space-y-4">
                   <FormField
                     control={form.control}
                     name="title"
@@ -362,8 +360,10 @@ export function ExerciseDialog({
                   />
                 </div>
 
+                <Separator orientation="vertical" />
+
                 {/* Right Column - 2/3 width */}
-                <div className="col-span-2 space-y-4">
+                <div className="space-y-4">
                   <FormField
                     control={form.control}
                     name="description"
@@ -373,7 +373,7 @@ export function ExerciseDialog({
                         <FormControl>
                           <Textarea
                             placeholder="Enter exercise description..."
-                            className="min-h-[110px]"
+                            className="min-h-[110px] max-h-[512px]"
                             {...field}
                           />
                         </FormControl>
@@ -382,43 +382,18 @@ export function ExerciseDialog({
                     )}
                   />
 
-                  <div>
-                    <Label htmlFor="fileInput">Attach Files</Label>
-                    <FileUploader
-                      value={files}
-                      onValueChange={setFiles}
-                      dropzoneOptions={dropZoneConfig}
-                      className="relative bg-background rounded-lg p-2"
-                    >
-                      <FileInput className="outline-dashed outline-1 outline-slate-500">
-                        <div className="flex items-center justify-center flex-col p-8 w-full">
-                          <CloudUpload className="text-gray-500 w-10 h-10" />
-                          <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
-                            <span className="font-semibold">Click to upload</span>
-                            &nbsp;or drag and drop
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            PDF, DOC, or other documents
-                          </p>
-                        </div>
-                      </FileInput>
-                      <FileUploaderContent>
-                        {files &&
-                          files.length > 0 &&
-                          files.map((file, i) => (
-                            <FileUploaderItem key={i} index={i}>
-                              <Paperclip className="h-4 w-4 stroke-current" />
-                              <span>{file.name}</span>
-                            </FileUploaderItem>
-                          ))}
-                      </FileUploaderContent>
-                    </FileUploader>
-                  </div>
+                  <ExerciseFileManager
+                    existingFiles={exerciseData?.files}
+                    newFiles={files}
+                    onNewFilesChange={setFiles}
+                    filesToRemove={filesToRemove}
+                    onFilesToRemoveChange={setFilesToRemove}
+                  />
                 </div>
               </div>
 
               {form.formState.errors.root && (
-                <div className="text-sm text-red-600">Test{form.formState.errors.root.message}</div>
+                <div className="text-sm text-red-600">{form.formState.errors.root.message}</div>
               )}
 
               <div className="flex justify-end">

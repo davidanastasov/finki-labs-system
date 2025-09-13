@@ -45,11 +45,17 @@ export const useExerciseById = (id: number, { queryConfig }: UseExerciseByIdOpti
 };
 
 // Mutations
+type CreateExerciseWithFilesData = {
+  data: CreateExerciseRequest;
+  files?: File[];
+};
+
 export const useCreateExercise = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: CreateExerciseRequest) => exerciseService.create(data),
+    mutationFn: ({ data, files }: CreateExerciseWithFilesData) =>
+      exerciseService.create(data, files),
     onSuccess: (newExercise) => {
       queryClient.invalidateQueries({
         queryKey: ["exercises", "lab-course", newExercise.labCourseId],
@@ -58,11 +64,18 @@ export const useCreateExercise = () => {
   });
 };
 
+type UpdateExerciseWithFilesData = {
+  data: UpdateExerciseRequest;
+  files?: File[];
+  removeFiles?: string[];
+};
+
 export const useUpdateExercise = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: UpdateExerciseRequest) => exerciseService.update(data),
+    mutationFn: ({ data, files, removeFiles }: UpdateExerciseWithFilesData) =>
+      exerciseService.update(data, files, removeFiles),
     onSuccess: (updatedExercise) => {
       queryClient.invalidateQueries({
         queryKey: ["exercises", "lab-course", updatedExercise.labCourseId],

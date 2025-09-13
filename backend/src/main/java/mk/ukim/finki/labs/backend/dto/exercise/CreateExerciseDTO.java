@@ -25,9 +25,7 @@ public record CreateExerciseDTO(
         @NotNull(message = "Total points is required")
         @Min(value = 1, message = "Total points must be at least 1")
         Integer totalPoints,
-        
-        String filePath,
-        
+
         @NotNull(message = "Lab course ID is required")
         Long labCourseId,
         
@@ -41,7 +39,6 @@ public record CreateExerciseDTO(
             labDate,
             dueDate,
             totalPoints,
-            filePath,
             labCourse,
             status != null ? status : ExerciseStatus.DRAFT
         );

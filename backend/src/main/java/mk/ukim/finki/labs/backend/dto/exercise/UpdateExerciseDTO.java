@@ -21,9 +21,7 @@ public record UpdateExerciseDTO(
         
         @Min(value = 1, message = "Total points must be at least 1")
         Integer totalPoints,
-        
-        String filePath,
-        
+
         ExerciseStatus status
 ) {
 }
