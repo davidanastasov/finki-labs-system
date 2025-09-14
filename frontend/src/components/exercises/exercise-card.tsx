@@ -1,8 +1,10 @@
 import { Edit, Eye, Trash2 } from "lucide-react";
-import type { ExerciseResponse, ExerciseStatus } from "@/services/exercise/models";
+import type { ExerciseResponse } from "@/services/exercise/models";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/date";
+import { getStatusColor } from "@/lib/theme";
+import { capitalize } from "@/lib/utils";
 
 interface ExerciseCardProps {
   exercise: ExerciseResponse;
@@ -11,19 +13,6 @@ interface ExerciseCardProps {
   onDelete?: (exercise: ExerciseResponse) => void;
 }
 
-const getStatusColor = (status: ExerciseStatus) => {
-  switch (status) {
-    case "PUBLISHED":
-      return "bg-green-100 text-green-800 hover:bg-green-200";
-    case "DRAFT":
-      return "bg-yellow-100 text-yellow-800 hover:bg-yellow-200";
-    case "ARCHIVED":
-      return "bg-gray-100 text-gray-800 hover:bg-gray-200";
-    default:
-      return "bg-gray-100 text-gray-800 hover:bg-gray-200";
-  }
-};
-
 const formatDateWithFallback = (dateString?: string) => {
   if (!dateString) return "Not set";
   return formatDate(new Date(dateString));
@@ -31,12 +20,12 @@ const formatDateWithFallback = (dateString?: string) => {
 
 export function ExerciseCard({ exercise, onEdit, onView, onDelete }: ExerciseCardProps) {
   return (
-    <div className="flex items-center justify-between p-4 border rounded-lg">
+    <div className="flex flex-col md:flex-row gap-2 items-center justify-between p-4 border rounded-lg">
       <div className="flex-1">
         <div className="flex items-center gap-2 mb-1">
           <h3 className="font-semibold">{exercise.title}</h3>
           <Badge variant="secondary" className={getStatusColor(exercise.status)}>
-            {exercise.status.toLowerCase()}
+            {capitalize(exercise.status)}
           </Badge>
         </div>
 

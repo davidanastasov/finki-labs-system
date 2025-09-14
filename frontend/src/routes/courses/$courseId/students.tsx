@@ -155,7 +155,7 @@ function RouteComponent() {
                   </h3>
                   <Badge variant="outline">{student.index}</Badge>
                 </div>
-                <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
+                <div className="flex flex-col md:flex-row md:items-center gap-4 mt-1 text-sm text-muted-foreground">
                   <span>{student.email}</span>
                   <span>{student.studyProgram.name}</span>
                 </div>

@@ -1,4 +1,9 @@
-import type { CreateExerciseRequest, ExerciseResponse, UpdateExerciseRequest } from "./models";
+import type {
+  CreateExerciseRequest,
+  ExerciseDetailsResponse,
+  ExerciseResponse,
+  UpdateExerciseRequest,
+} from "./models";
 import apiClient from "@/services/apiClient";
 
 export const findByLabCourseId = async (courseId: number) => {
@@ -6,7 +11,7 @@ export const findByLabCourseId = async (courseId: number) => {
 };
 
 export const findById = async (id: number) => {
-  return await apiClient.get<ExerciseResponse>(`api/exercises/${id}`).json();
+  return await apiClient.get<ExerciseDetailsResponse>(`api/exercises/${id}`).json();
 };
 
 export const create = async (courseId: number, data: CreateExerciseRequest, files?: File[]) => {
@@ -27,7 +32,7 @@ export const create = async (courseId: number, data: CreateExerciseRequest, file
   }
 
   return await apiClient
-    .post<ExerciseResponse>(`api/lab-courses/${courseId}/exercises`, { body: formData })
+    .post<ExerciseDetailsResponse>(`api/lab-courses/${courseId}/exercises`, { body: formData })
     .json();
 };
 
@@ -60,7 +65,7 @@ export const update = async (
   }
 
   return await apiClient
-    .put<ExerciseResponse>(`api/exercises/${data.id}`, { body: formData })
+    .put<ExerciseDetailsResponse>(`api/exercises/${data.id}`, { body: formData })
     .json();
 };
 

@@ -17,6 +17,24 @@ export interface ExerciseResponse {
   files: ExerciseFile[];
 }
 
+export interface ExerciseDetailsResponse {
+  id: number;
+  title: string;
+  description?: string;
+  labDate?: string;
+  dueDate?: string;
+  totalPoints: number;
+  status: ExerciseStatus;
+  files: ExerciseFile[];
+  course: {
+    id: number;
+    abbreviation: string;
+    name: string;
+    code: string;
+    year: number;
+  };
+}
+
 export interface CreateExerciseRequest {
   title: string;
   description?: string;

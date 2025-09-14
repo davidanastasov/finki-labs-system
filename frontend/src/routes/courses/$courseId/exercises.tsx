@@ -20,6 +20,7 @@ export const Route = createFileRoute("/courses/$courseId/exercises")({
 
 function CourseLabsComponent() {
   const { courseId } = Route.useParams();
+  const navigate = Route.useNavigate();
 
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingExercise, setEditingExercise] = useState<ExerciseResponse | null>(null);
@@ -33,8 +34,10 @@ function CourseLabsComponent() {
   };
 
   const handleView = (exercise: ExerciseResponse) => {
-    // TODO: Implement view functionality
-    console.log("View exercise:", exercise);
+    navigate({
+      to: `/courses/$courseId/exercises/$exerciseId`,
+      params: { courseId, exerciseId: exercise.id },
+    });
   };
 
   const handleDelete = (exercise: ExerciseResponse) => {

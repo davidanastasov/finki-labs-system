@@ -77,7 +77,7 @@ export const useUpdateExercise = () => {
       exerciseService.update(data, files, removeFiles),
     onSuccess: (updatedExercise) => {
       queryClient.invalidateQueries({
-        queryKey: ["lab-courses", updatedExercise.labCourseId, "exercises"],
+        queryKey: ["lab-courses", updatedExercise.course.id, "exercises"],
       });
     },
   });

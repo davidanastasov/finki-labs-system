@@ -1,9 +1,7 @@
 package mk.ukim.finki.labs.backend.dto.exercise;
 
 import mk.ukim.finki.labs.backend.dto.exercise.file.ExerciseFileDTO;
-import mk.ukim.finki.labs.backend.model.domain.Exercise;
-import mk.ukim.finki.labs.backend.model.domain.ExerciseFile;
-import mk.ukim.finki.labs.backend.model.domain.ExerciseStatus;
+import mk.ukim.finki.labs.backend.model.domain.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,35 +14,48 @@ public record ExerciseDetailsDTO(
         LocalDate labDate,
         LocalDate dueDate,
         Integer totalPoints,
-        Long labCourseId,
+        ExerciseCourseDTO course,
         ExerciseStatus status,
         List<ExerciseFileDTO> files
 ) {
-    
+
     public static ExerciseDetailsDTO from(Exercise exercise) {
         List<ExerciseFileDTO> exerciseFiles = exercise.getFiles().stream()
-            .map(ExerciseDetailsDTO::mapToFileResponse)
-            .collect(Collectors.toList());
-            
+                .map(ExerciseDetailsDTO::mapToFileResponse)
+                .collect(Collectors.toList());
+
         return new ExerciseDetailsDTO(
-            exercise.getId(),
-            exercise.getTitle(),
-            exercise.getDescription(),
-            exercise.getLabDate(),
-            exercise.getDueDate(),
-            exercise.getTotalPoints(),
-            exercise.getLabCourse().getId(),
-            exercise.getStatus(),
-            exerciseFiles
+                exercise.getId(),
+                exercise.getTitle(),
+                exercise.getDescription(),
+                exercise.getLabDate(),
+                exercise.getDueDate(),
+                exercise.getTotalPoints(),
+                ExerciseCourseDTO.fromLabCourse(exercise.getLabCourse()),
+                exercise.getStatus(),
+                exerciseFiles
         );
     }
-    
+
     private static ExerciseFileDTO mapToFileResponse(ExerciseFile file) {
         return new ExerciseFileDTO(
-            file.getId().toString(),
-            file.getFileName(),
-            file.getFileSize(),
-            file.getContentType()
+                file.getId().toString(),
+                file.getFileName(),
+                file.getFileSize(),
+                file.getContentType()
         );
     }
+
+    record ExerciseCourseDTO(Long id, String abbreviation, String name, String code, String year) {
+        static ExerciseCourseDTO fromLabCourse(LabCourse labCourse) {
+            return new ExerciseCourseDTO(
+                    labCourse.getId(),
+                    labCourse.getJoinedSubject().getAbbreviation(),
+                    labCourse.getJoinedSubject().getName(),
+                    labCourse.getJoinedSubject().getMainSubject().getId(),
+                    labCourse.getSemester().getYear()
+            );
+        }
+    }
+
 }
