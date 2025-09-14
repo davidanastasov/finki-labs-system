@@ -23,7 +23,7 @@ public class Exercise {
 
     private String title;
 
-    @Column(length = 1000)
+    @Column(length = 10_000)
     private String description;
 
     private LocalDate labDate;

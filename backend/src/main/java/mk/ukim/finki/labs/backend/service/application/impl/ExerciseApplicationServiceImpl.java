@@ -9,6 +9,7 @@ import mk.ukim.finki.labs.backend.model.domain.ExerciseFile;
 import mk.ukim.finki.labs.backend.service.application.ExerciseApplicationService;
 import mk.ukim.finki.labs.backend.service.domain.ExerciseService;
 import mk.ukim.finki.labs.backend.service.domain.ExerciseFileService;
+import mk.ukim.finki.labs.backend.service.domain.HtmlSanitizationService;
 import mk.ukim.finki.labs.backend.service.domain.LabCourseService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,7 @@ public class ExerciseApplicationServiceImpl implements ExerciseApplicationServic
     private final ExerciseService exerciseService;
     private final LabCourseService labCourseService;
     private final ExerciseFileService fileService;
+    private final HtmlSanitizationService htmlSanitizationService;
 
     @Override
     public List<ExerciseDTO> findByLabCourseId(Long labCourseId) {
@@ -45,8 +47,9 @@ public class ExerciseApplicationServiceImpl implements ExerciseApplicationServic
     public ExerciseDetailsDTO createWithFiles(Long courseId, CreateExerciseDTO createDto, List<MultipartFile> files) {
         var labCourse = labCourseService.findById(courseId)
                 .orElseThrow(() -> new IllegalArgumentException("Lab course with id " + courseId + " not found"));
-        
-        var exercise = createDto.toExercise(labCourse);
+
+        var sanitizedDescription = htmlSanitizationService.sanitizeHtml(createDto.description());
+        var exercise = createDto.toExercise(labCourse, sanitizedDescription);
         
         // Save exercise first to get ID
         var savedExercise = exerciseService.save(exercise)
@@ -70,7 +73,8 @@ public class ExerciseApplicationServiceImpl implements ExerciseApplicationServic
                     }
                     
                     if (updateDto.description() != null) {
-                        existingExercise.setDescription(updateDto.description());
+                        var sanitizedDescription = htmlSanitizationService.sanitizeHtml(updateDto.description());
+                        existingExercise.setDescription(sanitizedDescription);
                     }
                     
                     if (updateDto.labDate() != null) {

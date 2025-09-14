@@ -5,6 +5,7 @@ import { z } from "zod";
 import { format } from "date-fns";
 import { CalendarIcon, FlaskConical } from "lucide-react";
 import { Separator } from "../ui/separator";
+import { MinimalTiptapEditor } from "../ui/minimal-tiptap";
 import { ExerciseFileManager } from "./exercise-file-manager";
 import type { DateRange } from "react-day-picker";
 import {
@@ -23,7 +24,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
@@ -43,7 +43,10 @@ type FormData = z.infer<typeof formSchema>;
 const formSchema = z
   .object({
     title: z.string().min(1, "Title is required").max(255, "Title must not exceed 255 characters"),
-    description: z.string().max(1000, "Description must not exceed 1000 characters").optional(),
+    description: z
+      .string()
+      .max(10000, "Description content must not exceed 10,000 characters")
+      .optional(),
     labDate: z.date({ error: "Lab date is required" }),
     dueDate: z.date({ error: "Due date is required" }),
     totalPoints: z
@@ -372,10 +375,15 @@ export function ExerciseDialog({
                       <FormItem>
                         <FormLabel>Description</FormLabel>
                         <FormControl>
-                          <Textarea
-                            placeholder="Enter exercise description..."
-                            className="min-h-[110px] max-h-[512px]"
+                          <MinimalTiptapEditor
                             {...field}
+                            className="w-full min-h-[200px]"
+                            editorContentClassName="p-5 max-h-[512px] overflow-auto"
+                            output="html"
+                            placeholder="Enter your description..."
+                            editorClassName="focus:outline-hidden"
+                            immediatelyRender
+                            editable
                           />
                         </FormControl>
                         <FormMessage />

@@ -3,6 +3,7 @@ package mk.ukim.finki.labs.backend.dto.exercise;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import mk.ukim.finki.labs.backend.model.domain.ExerciseStatus;
+import mk.ukim.finki.labs.backend.validation.ValidHtml;
 
 import java.time.LocalDate;
 
@@ -12,7 +13,8 @@ public record UpdateExerciseDTO(
         @Size(max = 255, message = "Title must not exceed 255 characters")
         String title,
         
-        @Size(max = 1000, message = "Description must not exceed 1000 characters")
+        @Size(max = 10_000, message = "Description payload must not exceed 10,000 characters")
+        @ValidHtml(maxTextLength = 5000, message = "Description content is invalid or exceeds maximum length")
         String description,
         
         LocalDate labDate,
