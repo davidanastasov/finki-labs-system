@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { ThemeProvider } from "./providers/theme-provider.tsx";
 import { PageLoader } from "./components/loaders/page-loader.tsx";
+import { ErrorFallback } from "./components/layout/ErrorFallback.tsx";
 
 import * as TanStackQueryProvider from "./integrations/tanstack-query/root-provider.tsx";
 
@@ -20,6 +21,7 @@ const router = createRouter({
     ...TanStackQueryProviderContext,
   },
   defaultPendingComponent: () => <PageLoader />,
+  defaultErrorComponent: ErrorFallback,
   defaultPendingMs: 500,
   defaultPreload: "intent",
   scrollRestoration: true,
