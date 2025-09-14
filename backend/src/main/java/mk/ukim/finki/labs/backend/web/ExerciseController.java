@@ -4,7 +4,11 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import mk.ukim.finki.labs.backend.dto.exercise.ExerciseDetailsDTO;
 import mk.ukim.finki.labs.backend.dto.exercise.UpdateExerciseDTO;
+import mk.ukim.finki.labs.backend.dto.scoring.BulkUpdateScoresDTO;
+import mk.ukim.finki.labs.backend.dto.scoring.StudentExerciseScoreDTO;
+import mk.ukim.finki.labs.backend.dto.scoring.UpdateStudentScoreDTO;
 import mk.ukim.finki.labs.backend.service.application.ExerciseApplicationService;
+import mk.ukim.finki.labs.backend.service.application.StudentExerciseScoreApplicationService;
 import mk.ukim.finki.labs.backend.service.domain.ExerciseFileService;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -24,6 +28,7 @@ public class ExerciseController {
     
     private final ExerciseApplicationService exerciseApplicationService;
     private final ExerciseFileService fileService;
+    private final StudentExerciseScoreApplicationService scoreApplicationService;
 
     @GetMapping("/{id}")
     public ResponseEntity<ExerciseDetailsDTO> findById(@PathVariable Long id) {
@@ -64,6 +69,47 @@ public class ExerciseController {
             .contentType(MediaType.parseMediaType(contentType))
             .contentLength(fileData.length)
             .body(resource);
+    }
+
+    // ========== Student Exercise Score Endpoints ==========
+
+    @GetMapping("/{id}/scores")
+    public ResponseEntity<List<StudentExerciseScoreDTO>> getExerciseScores(@PathVariable Long id) {
+        var scores = scoreApplicationService.findScoresByExerciseId(id);
+        return ResponseEntity.ok(scores);
+    }
+
+    @PutMapping("/{id}/scores/student/{studentIndex}")
+    public ResponseEntity<StudentExerciseScoreDTO> updateStudentScore(
+            @PathVariable Long id,
+            @PathVariable String studentIndex,
+            @Valid @RequestBody UpdateStudentScoreDTO updateDto) {
+        
+        // Ensure the student index in path matches the one in request body
+        if (!studentIndex.equals(updateDto.studentIndex())) {
+            throw new IllegalArgumentException("Student index in path must match the one in request body");
+        }
+        
+        var updatedScore = scoreApplicationService.updateStudentScore(id, updateDto);
+        return ResponseEntity.ok(updatedScore);
+    }
+
+    @PutMapping("/{id}/scores/bulk")
+    public ResponseEntity<List<StudentExerciseScoreDTO>> bulkUpdateScores(
+            @PathVariable Long id,
+            @Valid @RequestBody BulkUpdateScoresDTO bulkUpdateDto) {
+        
+        var updatedScores = scoreApplicationService.bulkUpdateScores(id, bulkUpdateDto);
+        return ResponseEntity.ok(updatedScores);
+    }
+
+    @DeleteMapping("/{id}/scores/student/{studentIndex}")
+    public ResponseEntity<Void> deleteStudentScore(
+            @PathVariable Long id,
+            @PathVariable String studentIndex) {
+        
+        scoreApplicationService.deleteStudentScore(id, studentIndex);
+        return ResponseEntity.noContent().build();
     }
 
 }

@@ -59,3 +59,25 @@ export enum ExerciseStatus {
   PUBLISHED = "PUBLISHED",
   ARCHIVED = "ARCHIVED",
 }
+
+// ========== Student Exercise Score Models ==========
+
+export interface StudentExerciseScore {
+  id: number;
+  studentIndex: string;
+  studentName: string;
+  exerciseId: number;
+  exerciseTitle: string;
+  corePoints: number;
+  dateGraded: string;
+  gradedByName?: string;
+}
+
+export interface UpdateStudentScoreRequest {
+  studentIndex: string;
+  corePoints: number;
+}
+
+export interface BulkUpdateScoresRequest {
+  scores: UpdateStudentScoreRequest[];
+}

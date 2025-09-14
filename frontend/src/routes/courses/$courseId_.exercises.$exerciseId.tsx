@@ -14,6 +14,8 @@ import { ExerciseDescriptionPreview } from "@/components/exercises/exercise-desc
 import { downloadFile } from "@/services/exercise/exerciseService";
 import { downloadBlob } from "@/lib/file";
 import { getStatusColor } from "@/lib/theme";
+import { StudentExerciseScoring } from "@/components/exercises/scoring/exercise-scoring";
+import { Separator } from "@/components/ui/separator";
 
 const paramsSchema = z.object({
   courseId: z.coerce.number().int().positive(),
@@ -141,6 +143,10 @@ function RouteComponent() {
           </CardContent>
         </Card>
       </div>
+
+      <Separator />
+
+      <StudentExerciseScoring courseId={params.courseId} exerciseId={params.exerciseId} />
     </div>
   );
 }

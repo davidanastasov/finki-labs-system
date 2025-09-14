@@ -1,8 +1,11 @@
 import type {
+  BulkUpdateScoresRequest,
   CreateExerciseRequest,
   ExerciseDetailsResponse,
   ExerciseResponse,
+  StudentExerciseScore,
   UpdateExerciseRequest,
+  UpdateStudentScoreRequest,
 } from "./models";
 import apiClient from "@/services/apiClient";
 
@@ -75,4 +78,32 @@ export const deleteById = async (id: number) => {
 
 export const downloadFile = async (fileId: string) => {
   return await apiClient.get(`api/exercises/files/${fileId}/download`).blob();
+};
+
+// ========== Student Exercise Score Functions ==========
+
+export const getExerciseScores = async (exerciseId: number) => {
+  return await apiClient.get<StudentExerciseScore[]>(`api/exercises/${exerciseId}/scores`).json();
+};
+
+export const updateStudentScore = async (
+  exerciseId: number,
+  studentIndex: string,
+  data: UpdateStudentScoreRequest,
+) => {
+  return await apiClient
+    .put<StudentExerciseScore>(`api/exercises/${exerciseId}/scores/student/${studentIndex}`, {
+      json: data,
+    })
+    .json();
+};
+
+export const bulkUpdateScores = async (exerciseId: number, data: BulkUpdateScoresRequest) => {
+  return await apiClient
+    .put<StudentExerciseScore[]>(`api/exercises/${exerciseId}/scores/bulk`, { json: data })
+    .json();
+};
+
+export const deleteStudentScore = async (exerciseId: number, studentIndex: string) => {
+  await apiClient.delete(`api/exercises/${exerciseId}/scores/student/${studentIndex}`);
 };
