@@ -9,7 +9,8 @@ public record StudentDTO(
          String name,
          String lastName,
          String parentName,
-         StudyProgramDTO studyProgram
+         StudyProgramDTO studyProgram,
+         Long coursesCount
 ) {
 
     public static StudentDTO from(Student student) {
@@ -19,7 +20,8 @@ public record StudentDTO(
                 student.getName(),
                 student.getLastName(),
                 student.getParentName(),
-                StudyProgramDTO.from(student.getStudyProgram())
+                StudyProgramDTO.from(student.getStudyProgram()),
+                (long) student.getCourseEnrollments().size()
         );
     }
 }
