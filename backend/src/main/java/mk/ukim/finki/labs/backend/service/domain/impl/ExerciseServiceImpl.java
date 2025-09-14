@@ -42,7 +42,6 @@ public class ExerciseServiceImpl implements ExerciseService {
         }
         exerciseRepository.deleteById(id);
     }
-    
     @Override
     @Transactional(readOnly = true)
     public long countByLabCourseId(Long labCourseId) {

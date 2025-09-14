@@ -28,4 +28,10 @@ public interface LabCourseApplicationService {
     void addStudentsToCourse(Long courseId, List<String> studentIds);
 
     void removeStudentFromCourse(Long courseId, String studentId);
+
+    List<LabCourseStudentDTO> getStudentsWithSignatureStatus(Long courseId);
+
+    void updateSignatureStatusForCourse(Long courseId);
+//    void updateRequiredExercisesForSignature(Long courseId, int requiredExercises);
+
 }

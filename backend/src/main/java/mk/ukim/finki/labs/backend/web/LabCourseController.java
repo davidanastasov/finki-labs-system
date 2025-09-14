@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @AllArgsConstructor
 @RestController
@@ -112,5 +113,24 @@ public class LabCourseController {
         var exercise = exerciseApplicationService.createWithFiles(courseId, createDto, files);
         return ResponseEntity.status(HttpStatus.CREATED).body(exercise);
     }
+
+    @GetMapping("{courseId}/students")
+    public List<LabCourseStudentDTO> getStudents(@PathVariable Long courseId){
+        return labCourseApplicationService.getStudentsWithSignatureStatus(courseId);
+    }
+
+    @PostMapping("{courseId}/update-signature")
+    public void updateSignature(@PathVariable Long courseId){
+        labCourseApplicationService.updateSignatureStatusForCourse(courseId);
+    }
+
+//    @PutMapping("{courseId}/update-signature-requirement")
+//    public void updateSignatureRequirement(
+//            @PathVariable Long courseId,
+//            @RequestBody Map<String, Integer> body
+//    ) {
+//        int requiredExercises = body.get("requiredExercises");
+//        labCourseApplicationService.updateRequiredExercisesForSignature(courseId, requiredExercises);
+//    }
 
 }

@@ -44,6 +44,10 @@ public class LabCourse {
     @Column(length = 1000)
     private String description;
 
+    //@Column(nullable = false)
+    @Transient
+    private Integer requiredExercisesForSignature;
+
     @Enumerated(EnumType.STRING)
     private LabCourseStatus status;
 

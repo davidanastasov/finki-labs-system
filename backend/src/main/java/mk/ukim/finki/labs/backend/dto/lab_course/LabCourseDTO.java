@@ -15,7 +15,8 @@ public record LabCourseDTO(
         List<LabCourseProfessorDTO> professors,
         List<LabCourseProfessorDTO> assistants,
         LabCourseStatus status,
-        Integer enrolledStudentsCount
+        Integer enrolledStudentsCount,
+        Integer requiredExercisesForSignature
 ) {
 
     public static LabCourseDTO from(LabCourse labCourse) {
@@ -37,7 +38,8 @@ public record LabCourseDTO(
                         .map(professor -> new LabCourseProfessorDTO(professor.getId(), professor.getName()))
                         .toList(),
                 labCourse.getStatus(),
-                labCourse.getLabCourseStudents() != null ? labCourse.getLabCourseStudents().size() : 0
+                labCourse.getLabCourseStudents() != null ? labCourse.getLabCourseStudents().size() : 0,
+                labCourse.getRequiredExercisesForSignature()
         );
     }
 

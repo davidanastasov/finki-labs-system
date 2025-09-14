@@ -1,12 +1,10 @@
 package mk.ukim.finki.labs.backend.service.domain.impl;
 
 import lombok.AllArgsConstructor;
-import mk.ukim.finki.labs.backend.model.domain.LabCourse;
-import mk.ukim.finki.labs.backend.model.domain.LabCourseStudent;
-import mk.ukim.finki.labs.backend.model.domain.LabCourseStudentId;
-import mk.ukim.finki.labs.backend.model.domain.Student;
+import mk.ukim.finki.labs.backend.model.domain.*;
 import mk.ukim.finki.labs.backend.repository.LabCourseRepository;
 import mk.ukim.finki.labs.backend.repository.LabCourseStudentRepository;
+import mk.ukim.finki.labs.backend.repository.StudentExerciseScoreRepository;
 import mk.ukim.finki.labs.backend.repository.StudentRepository;
 import mk.ukim.finki.labs.backend.service.domain.LabCourseService;
 import mk.ukim.finki.labs.backend.model.exceptions.DuplicateLabCourseException;
@@ -17,10 +15,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static mk.ukim.finki.labs.backend.service.specification.FieldFilterSpecification.filterEquals;
 import static mk.ukim.finki.labs.backend.service.specification.FieldFilterSpecification.filterContainsText;
@@ -33,6 +29,7 @@ public class LabCourseServiceImpl implements LabCourseService {
     private final LabCourseRepository labCourseRepository;
     private final StudentRepository studentRepository;
     private final LabCourseStudentRepository labCourseStudentRepository;
+    private final StudentExerciseScoreRepository studentExerciseScoreRepository;
     
     @Override
     public Page<LabCourse> filter(String search, String semesterCode, Integer page, Integer pageSize) {
@@ -196,4 +193,37 @@ public class LabCourseServiceImpl implements LabCourseService {
         labCourseStudentRepository.deleteById(id);
     }
 
+    @Override
+    public SignatureStatus calculateSignatureStatus(LabCourseStudent student) {
+        LabCourse course = student.getLabCourse();
+
+        List<StudentExerciseScore> scores = studentExerciseScoreRepository
+                .findByStudentAndExerciseLabCourse(student.getStudent(), course);
+
+        long successful = scores.stream()
+                .filter(score -> score.getCorePoints() != null
+                && score.getCorePoints() >= score.getExercise().getMinPointsForSignature())
+                .count();
+
+        return successful >= course.getRequiredExercisesForSignature()
+                ? SignatureStatus.ELIGIBLE
+                : SignatureStatus.NOT_ELIGIBLE;
+    }
+
+    @Override
+    public void updateSignatureStatusForCourse(Long courseId) {
+        List<LabCourseStudent> students = labCourseStudentRepository.findAllByLabCourseId(courseId);
+
+        for (LabCourseStudent student : students){
+            SignatureStatus signatureStatus = calculateSignatureStatus(student);
+            student.setSignatureStatus(signatureStatus);
+        }
+
+        labCourseStudentRepository.saveAll(students);
+    }
+
+    @Override
+    public List<LabCourseStudent> findAllStudentsByCourseId(Long courseId) {
+        return labCourseStudentRepository.findAllByLabCourseId(courseId);
+    }
 }

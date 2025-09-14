@@ -32,6 +32,8 @@ public class Exercise {
 
     private Integer totalPoints;
 
+    private Integer minPointsForSignature;
+
     @ManyToOne(fetch = FetchType.LAZY)
     private LabCourse labCourse;
 

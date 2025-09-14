@@ -3,9 +3,6 @@ package mk.ukim.finki.labs.backend.model.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.io.Serializable;
-import java.util.Objects;
-
 @Entity
 @Getter
 @Setter
@@ -25,4 +22,12 @@ public class LabCourseStudent {
     @JoinColumn(name = "student_id")
     private Student student;
 
+    @Enumerated(EnumType.STRING)
+    private SignatureStatus signatureStatus;
+
+    public LabCourseStudent(LabCourse labCourse, Student student) {
+        this.labCourse = labCourse;
+        this.student = student;
+        this.signatureStatus = SignatureStatus.NOT_ELIGIBLE;
+    }
 }

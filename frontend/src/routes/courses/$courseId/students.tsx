@@ -1,5 +1,5 @@
 import { FilterIcon, Search, UserPlus, UserX } from "lucide-react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useParams } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import z from "zod";
 import type { FilterCourseStudentResponse } from "@/services/lab-course/models";
@@ -154,6 +154,9 @@ function RouteComponent() {
                     {student.name} {student.lastName}
                   </h3>
                   <Badge variant="outline">{student.index}</Badge>
+                  <Badge variant={student.signatureStatus === "ELIGIBLE" ? "default" : "secondary"}>
+                    {student.signatureStatus === "ELIGIBLE" ? "Eligible" : "Not Eligible"}
+                  </Badge>
                 </div>
                 <div className="flex flex-col md:flex-row md:items-center gap-4 mt-1 text-sm text-muted-foreground">
                   <span>{student.email}</span>

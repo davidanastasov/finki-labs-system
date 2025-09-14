@@ -20,6 +20,20 @@ export const getLabCourseByIdQueryOptions = (id: number) => {
   });
 };
 
+export const getCourseSignatureConditionsQueryOptions = (courseId: number) =>
+  queryOptions({
+    queryKey: ["courseSignatureConditions", courseId],
+    queryFn: async () => {
+      const res = await fetch(`/api/courses/${courseId}/signature-conditions`);
+      if (!res.ok) throw new Error("Failed to fetch signature conditions");
+      return res.json();
+    },
+  });
+
+export const useCourseSignatureConditions = (courseId: number) => {
+  return useQuery(getCourseSignatureConditionsQueryOptions(courseId));
+};
+
 // Hooks
 type UseLabCoursesFilterOptions = {
   params: {
