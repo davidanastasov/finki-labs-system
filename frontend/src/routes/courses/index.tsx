@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
-import { FilterIcon, Plus, Search, Users } from "lucide-react";
+import { BookOpen, FilterIcon, Plus, Search, Users } from "lucide-react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import PaginationControl from "@/components/pagination/pagination-control";
 import PaginationSizeSelect from "@/components/pagination/pagination-size-select";
@@ -97,7 +97,7 @@ function RouteComponent() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Courses</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <BookOpen className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <LoadingWrapper
@@ -113,6 +113,7 @@ function RouteComponent() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Active Courses</CardTitle>
+            <BookOpen className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <LoadingWrapper
@@ -130,6 +131,7 @@ function RouteComponent() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Students</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <LoadingWrapper
