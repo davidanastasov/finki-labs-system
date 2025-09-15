@@ -41,6 +41,9 @@ public class LabCourse {
     @OneToMany(mappedBy = "labCourse", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LabCourseStudent> labCourseStudents = new ArrayList<>();
 
+    @OneToMany(mappedBy = "labCourse", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Exercise> exercises;
+
     @Column(length = 1000)
     private String description;
 

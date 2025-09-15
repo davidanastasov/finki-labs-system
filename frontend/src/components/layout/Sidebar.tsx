@@ -22,11 +22,6 @@ const navigation = [
     href: "/students",
     icon: Users,
   },
-  {
-    name: "Statistics",
-    href: "/statistics",
-    icon: BarChart3,
-  },
 ];
 
 export function Sidebar() {

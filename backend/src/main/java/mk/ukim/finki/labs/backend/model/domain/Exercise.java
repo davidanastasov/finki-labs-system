@@ -43,6 +43,9 @@ public class Exercise {
     @OneToMany(mappedBy = "exercise", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ExerciseFile> files = new ArrayList<>();
 
+    @OneToMany(mappedBy = "exercise", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<StudentExerciseScore> scores = new ArrayList<>();
+
     // Constructor without ID for creating new entities
     public Exercise(String title, String description, LocalDate labDate, 
                    LocalDate dueDate, Integer totalPoints,
