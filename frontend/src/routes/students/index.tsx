@@ -153,7 +153,7 @@ function RouteComponent() {
                 studyTrack: student.studyProgram.name,
                 id: student.index,
                 indexNumber: student.index,
-                enrolledCoursesCount: 0,
+                enrolledCoursesCount: student.coursesCount,
               })) || []
             }
             isLoading={isStudentsLoading}

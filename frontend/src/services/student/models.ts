@@ -17,4 +17,5 @@ export type FilterStudentsResponse = PaginatedResponse<{
     code: string;
     name: string;
   };
+  coursesCount: number;
 }>;
