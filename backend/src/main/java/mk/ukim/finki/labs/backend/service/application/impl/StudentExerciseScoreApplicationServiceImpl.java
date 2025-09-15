@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import mk.ukim.finki.labs.backend.dto.scoring.BulkUpdateScoresDTO;
 import mk.ukim.finki.labs.backend.dto.scoring.StudentExerciseScoreDTO;
 import mk.ukim.finki.labs.backend.dto.scoring.UpdateStudentScoreDTO;
+import mk.ukim.finki.labs.backend.model.domain.LabCourseStudent;
 import mk.ukim.finki.labs.backend.model.domain.StudentExerciseScore;
 import mk.ukim.finki.labs.backend.service.application.StudentExerciseScoreApplicationService;
 import mk.ukim.finki.labs.backend.service.domain.ExerciseService;
@@ -56,6 +57,7 @@ public class StudentExerciseScoreApplicationServiceImpl implements StudentExerci
             score = existingScore.get();
             score.setCorePoints(updateDto.corePoints());
             score.setDateGraded(LocalDateTime.now());
+            score.setLabCourseStudent(new LabCourseStudent(score.getExercise().getLabCourse(), score.getStudent()));
         } else {
             // Create new score
             score = new StudentExerciseScore(

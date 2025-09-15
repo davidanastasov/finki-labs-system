@@ -45,6 +45,7 @@ public class StudentExerciseScore {
                                LocalDateTime dateGraded) {
         this.student = student;
         this.exercise = exercise;
+        this.labCourseStudent = new LabCourseStudent(exercise.getLabCourse(), student);
         this.corePoints = corePoints;
         this.dateGraded = dateGraded;
     }
