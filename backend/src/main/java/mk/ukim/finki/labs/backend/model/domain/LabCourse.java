@@ -53,9 +53,6 @@ public class LabCourse {
     @Enumerated(EnumType.STRING)
     private LabCourseStatus status;
 
-    @OneToMany(mappedBy = "labCourse")
-    private List<Exercise> exercises;
-
     // Constructor without ID for creating new entities
     public LabCourse(Semester semester, JoinedSubject joinedSubject, 
                     List<Professor> professors, List<Professor> assistants, 
