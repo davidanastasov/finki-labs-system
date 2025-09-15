@@ -24,7 +24,15 @@ public class LabCourseStudent {
     @JoinColumn(name = "student_id")
     private Student student;
 
-//    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<StudentExerciseScore> studentExerciseScores;
+    @OneToMany(mappedBy = "labCourseStudent", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<StudentExerciseScore> studentExerciseScores;
 
+    @Enumerated(EnumType.STRING)
+    private SignatureStatus signatureStatus;
+
+    public LabCourseStudent(LabCourse labCourse, Student student) {
+        this.labCourse = labCourse;
+        this.student = student;
+        this.signatureStatus = SignatureStatus.NOT_ELIGIBLE;
+    }
 }

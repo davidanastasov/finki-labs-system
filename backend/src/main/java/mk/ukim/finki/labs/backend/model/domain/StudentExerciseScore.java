@@ -33,6 +33,9 @@ public class StudentExerciseScore {
     @JoinColumn(name = "exercise_id")
     private Exercise exercise;
 
+    @ManyToOne
+    private LabCourseStudent labCourseStudent;
+
     private Integer corePoints;
 
     private LocalDateTime dateGraded;
@@ -42,6 +45,7 @@ public class StudentExerciseScore {
                                LocalDateTime dateGraded) {
         this.student = student;
         this.exercise = exercise;
+        this.labCourseStudent = new LabCourseStudent(exercise.getLabCourse(), student);
         this.corePoints = corePoints;
         this.dateGraded = dateGraded;
     }
