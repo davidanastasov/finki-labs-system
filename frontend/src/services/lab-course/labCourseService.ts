@@ -77,6 +77,6 @@ export const updateSignatureForCourse = (courseId: number) =>
   apiClient.post(`api/lab-courses/${courseId}/update-signature`);
 
 export const updateSignatureRequirement = (courseId: number, requiredExercises: number) =>
-  apiClient.put(`/api/lab-courses/${courseId}/update-signature-requirement`, {
+  apiClient.put(`api/lab-courses/${courseId}/update-signature-requirement`, {
     json: { requiredExercises },
   });

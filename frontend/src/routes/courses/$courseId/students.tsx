@@ -20,11 +20,8 @@ import {
 } from "@/data/labCourseStudent";
 import { AddStudentToCourseDialog } from "@/components/courses/students/add-student-to-course-form-dialog";
 import { ConfirmDialog } from "@/components/common/confirm-dialog";
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import {
-  getLabCourseByIdQueryOptions,
-  getStudentsWithSignatureQueryOptions,
-} from "@/data/labCourse";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { getLabCourseByIdQueryOptions } from "@/data/labCourse";
 
 const studentsSearchSchema = z.object({
   page: z.number().catch(DEFAULT_PAGE),
@@ -60,9 +57,6 @@ function RouteComponent() {
   console.log(course);
 
   const [isAddStudentsDialogOpen, setIsAddStudentsDialogOpen] = useState(false);
-
-  const { data } = useQuery(getStudentsWithSignatureQueryOptions(courseId));
-  const students = data?.items ?? [];
 
   const [studyProgramSearchValue, setStudyProgramSearchValue] = useState<string>("");
   const {
@@ -168,13 +162,13 @@ function RouteComponent() {
                   {student.signatureStatus === "ELIGIBLE" ? (
                     <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                       <CheckCircle className="mr-1 h-3 w-3" />
-                      Signature ({student.labsCompleted}/
+                      Signature({student.labsCompleted}/
                       {course?.requiredExercisesForSignature ?? course?.totalLabs})
                     </Badge>
                   ) : (
                     <Badge variant="destructive">
                       <XCircle className="mr-1 h-3 w-3" />
-                      No Signature ({student.labsCompleted}/
+                      No Signature({student.labsCompleted}/
                       {course?.requiredExercisesForSignature ?? course?.totalLabs} required)
                     </Badge>
                   )}

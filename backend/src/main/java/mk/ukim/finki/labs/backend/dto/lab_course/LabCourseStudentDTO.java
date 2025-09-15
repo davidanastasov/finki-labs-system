@@ -1,8 +1,8 @@
 package mk.ukim.finki.labs.backend.dto.lab_course;
 
-import mk.ukim.finki.labs.backend.model.domain.LabCourseStudent;
-import mk.ukim.finki.labs.backend.model.domain.SignatureStatus;
-import mk.ukim.finki.labs.backend.model.domain.Student;
+import mk.ukim.finki.labs.backend.model.domain.*;
+
+import java.util.Optional;
 
 public record LabCourseStudentDTO(
         String index,
@@ -16,10 +16,14 @@ public record LabCourseStudentDTO(
     public static LabCourseStudentDTO from(LabCourseStudent lcs) {
         Student student = lcs.getStudent();
 
-        long completed = lcs.getStudentExerciseScores().stream()
-                .filter(score -> score.getCorePoints() != null &&
-                        score.getExercise().getMinPointsForSignature() != null &&
-                        score.getCorePoints() >= score.getExercise().getMinPointsForSignature())
+        long successfulExercisesCount = lcs.getStudentExerciseScores().stream()
+                .filter(score -> {
+                    Integer corePoints = score.getCorePoints();
+                    Integer minPoints = Optional.ofNullable(score.getExercise())
+                            .map(Exercise::getMinPointsForSignature)
+                            .orElse(0);
+                    return corePoints != null && corePoints >= minPoints;
+                })
                 .count();
 
         return new LabCourseStudentDTO(
@@ -32,7 +36,7 @@ public record LabCourseStudentDTO(
                         student.getStudyProgram().getName()
                 ),
                 lcs.getSignatureStatus(),
-                (int) completed
+                (int) successfulExercisesCount
         );
     }
         record LabCourseStudentStudyProgramDto(String code, String name) {}

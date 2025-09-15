@@ -187,19 +187,46 @@ public class LabCourseServiceImpl implements LabCourseService {
         labCourseStudentRepository.deleteById(id);
     }
 
+//    @Override
+//    public SignatureStatus calculateSignatureStatus(LabCourseStudent student) {
+//        LabCourse course = student.getLabCourse();
+//
+//        List<StudentExerciseScore> scores = studentExerciseScoreRepository
+//                .findByStudentAndExerciseLabCourse(student.getStudent(), course);
+//
+//        long successful = scores.stream()
+//                .filter(score -> score.getCorePoints() != null
+//                && score.getCorePoints() >= score.getExercise().getMinPointsForSignature())
+//                .count();
+//
+//        return successful >= course.getRequiredExercisesForSignature()
+//                ? SignatureStatus.ELIGIBLE
+//                : SignatureStatus.NOT_ELIGIBLE;
+//    }
+
     @Override
     public SignatureStatus calculateSignatureStatus(LabCourseStudent student) {
         LabCourse course = student.getLabCourse();
 
+        // Handle courses without signature conditions
+        if (course.getRequiredExercisesForSignature() == null) {
+            return SignatureStatus.ELIGIBLE;
+        }
+
         List<StudentExerciseScore> scores = studentExerciseScoreRepository
                 .findByStudentAndExerciseLabCourse(student.getStudent(), course);
 
-        long successful = scores.stream()
-                .filter(score -> score.getCorePoints() != null
-                && score.getCorePoints() >= score.getExercise().getMinPointsForSignature())
+        long successfulExercisesCount = scores.stream()
+                .filter(score -> {
+                    Integer corePoints = score.getCorePoints();
+                    Integer minPoints = Optional.ofNullable(score.getExercise())
+                            .map(Exercise::getMinPointsForSignature)
+                            .orElse(0);
+                    return corePoints != null && corePoints >= minPoints;
+                })
                 .count();
 
-        return successful >= course.getRequiredExercisesForSignature()
+        return successfulExercisesCount >= course.getRequiredExercisesForSignature()
                 ? SignatureStatus.ELIGIBLE
                 : SignatureStatus.NOT_ELIGIBLE;
     }
