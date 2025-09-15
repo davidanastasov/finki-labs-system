@@ -26,9 +26,11 @@ public class StudentExerciseScore {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "student_id")
     private Student student;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "exercise_id")
     private Exercise exercise;
 
     private Integer corePoints;

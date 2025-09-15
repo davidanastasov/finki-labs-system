@@ -3,8 +3,7 @@ package mk.ukim.finki.labs.backend.model.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.io.Serializable;
-import java.util.Objects;
+import java.util.List;
 
 @Entity
 @Getter
@@ -24,5 +23,8 @@ public class LabCourseStudent {
     @ManyToOne(optional = false)
     @JoinColumn(name = "student_id")
     private Student student;
+
+//    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<StudentExerciseScore> studentExerciseScores;
 
 }
