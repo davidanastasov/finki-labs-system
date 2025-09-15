@@ -162,14 +162,22 @@ function RouteComponent() {
                   {student.signatureStatus === "ELIGIBLE" ? (
                     <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                       <CheckCircle className="mr-1 h-3 w-3" />
-                      Signature({student.labsCompleted}/
-                      {course?.requiredExercisesForSignature ?? course?.totalLabs})
+                      Signature{" "}
+                      {course?.requiredExercisesForSignature !== null && (
+                        <span>
+                          ({student.labsCompleted}/{course.requiredExercisesForSignature})
+                        </span>
+                      )}
                     </Badge>
                   ) : (
                     <Badge variant="destructive">
                       <XCircle className="mr-1 h-3 w-3" />
-                      No Signature({student.labsCompleted}/
-                      {course?.requiredExercisesForSignature ?? course?.totalLabs} required)
+                      No Signature{" "}
+                      {course?.requiredExercisesForSignature !== null && (
+                        <span>
+                          ({student.labsCompleted}/{course.requiredExercisesForSignature})
+                        </span>
+                      )}
                     </Badge>
                   )}
                 </div>
