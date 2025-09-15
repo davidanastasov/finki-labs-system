@@ -22,11 +22,6 @@ const navigation = [
     href: "/students",
     icon: Users,
   },
-  {
-    name: "Statistics",
-    href: "/statistics",
-    icon: BarChart3,
-  },
 ];
 
 export function Sidebar() {
@@ -36,7 +31,7 @@ export function Sidebar() {
   const SidebarContent = () => (
     <div className="flex h-full flex-col">
       <div className="flex h-14 items-center border-b lg:h-[60px] px-4">
-        <Link className="flex items-center gap-2 font-semibold" to="/dashboard" search={undefined}>
+        <Link className="flex items-center gap-2 font-semibold" to="/dashboard">
           <img
             src="/images/finki-logo.png"
             alt="FINKI Logo"

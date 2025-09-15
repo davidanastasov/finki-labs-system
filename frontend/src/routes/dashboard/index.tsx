@@ -161,7 +161,7 @@ function RouteComponent() {
               <div className="text-2xl font-bold">{averageScore}</div>
             )}
             <p className="text-xs text-muted-foreground">
-              {allScores.length} exercise{allScores.length !== 1 ? "s" : ""} graded
+              {allScores.length} exercise{allScores.length !== 1 ? "s" : ""} graded in all courses
             </p>
           </CardContent>
         </Card>
@@ -201,7 +201,9 @@ function RouteComponent() {
             {/* Десна половина: 3/4 од ширината */}
             <Card className="h-full col-span-3">
               <CardHeader>
-                <CardTitle className="text-sm font-medium">Score Distribution</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Distribution of Students and Scores
+                </CardTitle>
               </CardHeader>
               <CardContent className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">

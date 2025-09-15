@@ -23,12 +23,12 @@ export function Header() {
           <Button variant="secondary" size="icon" className="rounded-full">
             <Avatar className="h-8 w-8">
               <AvatarImage src="/diverse-professor-lecturing.png" alt="User" />
-              <AvatarFallback>JD</AvatarFallback>
+              <AvatarFallback>NS</AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Prof. John Doe</DropdownMenuLabel>
+          <DropdownMenuLabel>Name Surname</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem>
             <User className="mr-2 h-4 w-4" />
