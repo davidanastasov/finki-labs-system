@@ -1,67 +1,22 @@
-import { useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { BookOpen, Users, TrendingUp } from "lucide-react";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { BookOpen, FlaskConical, TrendingUp, Users } from "lucide-react";
+import { useQueries } from "@tanstack/react-query";
+import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import type { ExerciseResponse, StudentExerciseScore } from "@/services/exercise";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useDebouncedSearch } from "@/hooks/use-debounced-search";
-import { getLabCoursesFilterQueryOptions, useLabCoursesFilter } from "@/data/labCourse";
-import { getAllSemestersQueryOptions } from "@/data/semester";
-import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from "@/lib/constants";
+import { useLabCoursesFilter } from "@/data/labCourse";
 import { LoadingWrapper } from "@/components/loaders/loading-wrapper";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useQueries } from "@tanstack/react-query";
 import { findByLabCourseId, getExerciseScores } from "@/services/exercise/exerciseService";
-import { FlaskConical } from "lucide-react";
-import type { ExerciseResponse, StudentExerciseScore } from "@/services/exercise";
-import z from "zod";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-
-// ...
-const coursesSearchSchema = z.object({
-  page: z.number().catch(DEFAULT_PAGE),
-  pageSize: z
-    .preprocess((val) => Number(val), z.union(PAGE_SIZE_OPTIONS.map((size) => z.literal(size))))
-    .catch(DEFAULT_PAGE_SIZE),
-  search: z.string().optional(),
-  semester: z.string().optional(),
-});
 
 export const Route = createFileRoute("/dashboard/")({
   component: RouteComponent,
-  validateSearch: (search) => coursesSearchSchema.parse(search),
-  loaderDeps: ({ search }) => search,
-  loader: ({ context: { queryClient }, deps }) => {
-    queryClient.prefetchQuery(getLabCoursesFilterQueryOptions(deps));
-    return Promise.allSettled([queryClient.ensureQueryData(getAllSemestersQueryOptions())]);
-  },
 });
 
 function RouteComponent() {
-  const navigate = Route.useNavigate();
-  const searchParams = Route.useSearch();
-
-  const { debouncedValue: debouncedSearchValue } = useDebouncedSearch(searchParams.search || "", {
-    delay: 300,
-    minLength: 0,
-  });
-
-  useEffect(() => {
-    if (debouncedSearchValue !== searchParams.search) {
-      navigate({
-        search: (prev) => ({ ...prev, search: debouncedSearchValue || undefined }),
-        replace: true,
-      });
-    }
-  }, [debouncedSearchValue, searchParams.search, navigate]);
-
-  const {} = useSuspenseQuery(getAllSemestersQueryOptions());
-
   const { data: courses, isLoading: isCoursesLoading } = useLabCoursesFilter({
     params: {
-      page: searchParams.page,
-      pageSize: searchParams.pageSize,
-      search: searchParams.search,
-      semesterCode: searchParams.semester,
+      pageSize: 100,
     },
   });
 
@@ -78,8 +33,8 @@ function RouteComponent() {
   const isExercisesLoading = exerciseQueries.some((q) => q.isLoading);
 
   const calculateAverageScore = (scores: StudentExerciseScore[]) => {
-    if (!scores || scores.length === 0) return 0;
-    const total = scores.reduce((sum, s) => sum + (s.corePoints ?? 0), 0);
+    if (scores.length === 0) return 0;
+    const total = scores.reduce((sum, s) => sum + s.corePoints, 0);
     return total / scores.length;
   };
 
@@ -116,11 +71,11 @@ function RouteComponent() {
         exercisesForCourse.some((ex: ExerciseResponse) => ex.id === score.exerciseId),
       );
     const average = scoresForCourse.length
-      ? scoresForCourse.reduce((sum, s) => sum + (s.corePoints ?? 0), 0) / scoresForCourse.length
+      ? scoresForCourse.reduce((sum, s) => sum + s.corePoints, 0) / scoresForCourse.length
       : 0;
 
     const maxScore = exercisesForCourse.reduce(
-      (sum: number, exercise: ExerciseResponse) => sum + (exercise.totalPoints ?? 0),
+      (sum: number, exercise: ExerciseResponse) => sum + exercise.totalPoints,
       0,
     );
 
@@ -129,7 +84,7 @@ function RouteComponent() {
       const scoresForExercise = scoresMap[exercise.id] ?? [];
       return {
         exercise: exercise.title,
-        totalPoints: scoresForExercise.reduce((sum, s) => sum + (s.corePoints ?? 0), 0),
+        totalPoints: scoresForExercise.reduce((sum, s) => sum + s.corePoints, 0),
         students: scoresForExercise.length,
       };
     });
@@ -153,7 +108,7 @@ function RouteComponent() {
             <BookOpen className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{courses?.items?.length || 0}</div>
+            <div className="text-2xl font-bold">{courses?.items.length || 0}</div>
             <p className="text-xs text-muted-foreground">Across all courses</p>
           </CardContent>
         </Card>
