@@ -7,9 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Settings } from "lucide-react";
-import { getLabCourseByIdQueryOptions, useCourseSignatureConditions } from "@/data/labCourse";
+import { getLabCourseByIdQueryOptions } from "@/data/labCourse";
 import { capitalize } from "@/lib/utils";
 import { useEffect, useState } from "react";
+import { updateSignatureRequirement } from "@/services/lab-course/labCourseService";
 
 export const Route = createFileRoute("/courses/$courseId/")({
   component: CourseOverviewComponent,
@@ -19,20 +20,29 @@ function CourseOverviewComponent() {
   const { courseId } = Route.useParams();
   const { data: course } = useSuspenseQuery(getLabCourseByIdQueryOptions(Number(courseId)));
 
-  const { data: signatureConditions } = useCourseSignatureConditions(Number(courseId));
+  const signatureConditions = {
+    requiredLabs: course.requiredExercisesForSignature,
+    totalLabs: course.totalLabs,
+    additionalRequirements: "",
+  };
 
   const [isEditingConditions, setIsEditingConditions] = useState(false);
+
   const [editableConditions, setEditableConditions] = useState({
-    requiredLabs: 1,
-    totalLabs: 1,
-    description: "",
+    requiredLabs: course.requiredExercisesForSignature,
+    totalLabs: course.totalLabs,
+    additionalRequirements: "",
   });
 
   useEffect(() => {
-    if (signatureConditions) {
-      setEditableConditions(signatureConditions);
+    if (course) {
+      setEditableConditions({
+        requiredLabs: course.requiredExercisesForSignature,
+        totalLabs: course.totalLabs,
+        additionalRequirements: "",
+      });
     }
-  }, [signatureConditions]);
+  }, [course]);
 
   return (
     <>
@@ -103,7 +113,6 @@ function CourseOverviewComponent() {
         </CardContent>
       </Card>
 
-      {/* Signature Conditions Card */}
       <Card className="mt-4">
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -151,12 +160,7 @@ function CourseOverviewComponent() {
                     type="number"
                     min="1"
                     value={editableConditions.totalLabs}
-                    onChange={(e) =>
-                      setEditableConditions({
-                        ...editableConditions,
-                        totalLabs: Number.parseInt(e.target.value) || 1,
-                      })
-                    }
+                    disabled
                     className="mt-1"
                   />
                 </div>
@@ -165,11 +169,11 @@ function CourseOverviewComponent() {
                 <Label htmlFor="conditions">Additional Requirements</Label>
                 <Textarea
                   id="conditions"
-                  value={editableConditions.description}
+                  value={editableConditions.additionalRequirements}
                   onChange={(e) =>
                     setEditableConditions({
                       ...editableConditions,
-                      description: e.target.value,
+                      additionalRequirements: e.target.value,
                     })
                   }
                   rows={4}
@@ -179,22 +183,18 @@ function CourseOverviewComponent() {
               <div className="flex gap-2">
                 <Button
                   size="sm"
-                  onClick={() => {
-                    setIsEditingConditions(false);
-                    // TODO: овде повикај mutation за зачувување на бекенд
+                  onClick={async () => {
+                    if (!course) return;
+
+                    try {
+                      await updateSignatureRequirement(course.id, editableConditions.requiredLabs);
+                      setIsEditingConditions(false);
+                    } catch (error) {
+                      console.error("Failed to update signature requirements:", error);
+                    }
                   }}
                 >
                   Save Changes
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setEditableConditions(signatureConditions);
-                    setIsEditingConditions(false);
-                  }}
-                >
-                  Cancel
                 </Button>
               </div>
             </div>
@@ -206,7 +206,9 @@ function CourseOverviewComponent() {
                   required
                 </p>
               </div>
-              <p className="text-muted-foreground text-sm">{editableConditions.description}</p>
+              <p className="text-muted-foreground text-sm">
+                {editableConditions.additionalRequirements}
+              </p>
             </div>
           )}
         </CardContent>

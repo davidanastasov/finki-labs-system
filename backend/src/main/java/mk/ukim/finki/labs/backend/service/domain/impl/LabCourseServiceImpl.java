@@ -136,7 +136,7 @@ public class LabCourseServiceImpl implements LabCourseService {
     }
 
     @Override
-    public Page<Student> filterStudents(Long courseId, String search, String studyProgramCode, Integer page, Integer pageSize) {
+    public Page<LabCourseStudent> filterStudents(Long courseId, String search, String studyProgramCode, Integer page, Integer pageSize) {
 
         Specification<LabCourseStudent> fullNameSpec = (root, query, cb) -> {
             if (search == null || search.isEmpty()) return null;
@@ -155,16 +155,10 @@ public class LabCourseServiceImpl implements LabCourseService {
                         filterEquals(LabCourseStudent.class, "student.studyProgram.code", studyProgramCode)
                 );
 
-        var labCourseStudentPage = this.labCourseStudentRepository.findAll(
+        return this.labCourseStudentRepository.findAll(
                 specification,
                 PageRequest.of(page, pageSize)
         );
-
-        List<Student> students = labCourseStudentPage
-                .map(LabCourseStudent::getStudent)
-                .getContent();
-
-        return new PageImpl<>(students, PageRequest.of(page, pageSize), labCourseStudentPage.getTotalElements());
     }
 
     @Override

@@ -31,6 +31,9 @@ public class StudentExerciseScore {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Exercise exercise;
 
+    @ManyToOne
+    private LabCourseStudent labCourseStudent;
+
     private Integer corePoints;
 
     private LocalDateTime dateGraded;

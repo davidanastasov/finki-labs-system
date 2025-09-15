@@ -10,22 +10,18 @@ public record LabCourseStudentDTO(
         String name,
         String lastName,
         LabCourseStudentStudyProgramDto studyProgram,
-        SignatureStatus signatureStatus
+        SignatureStatus signatureStatus,
+        Integer labsCompleted
 ) {
-    public static LabCourseStudentDTO from(Student student){
-        return new LabCourseStudentDTO(
-                student.getIndex(),
-                student.getEmail(),
-                student.getName(),
-                student.getLastName(),
-                new LabCourseStudentStudyProgramDto(student.getStudyProgram().getCode(),
-                        student.getStudyProgram().getName()),
-                null
-
-        );
-    }
     public static LabCourseStudentDTO from(LabCourseStudent lcs) {
         Student student = lcs.getStudent();
+
+        long completed = lcs.getStudentExerciseScores().stream()
+                .filter(score -> score.getCorePoints() != null &&
+                        score.getExercise().getMinPointsForSignature() != null &&
+                        score.getCorePoints() >= score.getExercise().getMinPointsForSignature())
+                .count();
+
         return new LabCourseStudentDTO(
                 student.getIndex(),
                 student.getEmail(),
@@ -35,7 +31,8 @@ public record LabCourseStudentDTO(
                         student.getStudyProgram().getCode(),
                         student.getStudyProgram().getName()
                 ),
-                lcs.getSignatureStatus()
+                lcs.getSignatureStatus(),
+                (int) completed
         );
     }
         record LabCourseStudentStudyProgramDto(String code, String name) {}

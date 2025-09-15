@@ -20,18 +20,14 @@ export const getLabCourseByIdQueryOptions = (id: number) => {
   });
 };
 
-export const getCourseSignatureConditionsQueryOptions = (courseId: number) =>
+export const getStudentsWithSignatureQueryOptions = (courseId: number) =>
   queryOptions({
-    queryKey: ["courseSignatureConditions", courseId],
-    queryFn: async () => {
-      const res = await fetch(`/api/courses/${courseId}/signature-conditions`);
-      if (!res.ok) throw new Error("Failed to fetch signature conditions");
-      return res.json();
-    },
+    queryKey: ["lab-courses", courseId, "students-signature"],
+    queryFn: () => labCourseService.getStudentsWithSignatureStatus(courseId),
   });
 
-export const useCourseSignatureConditions = (courseId: number) => {
-  return useQuery(getCourseSignatureConditionsQueryOptions(courseId));
+export const useStudentsWithSignature = (courseId: number) => {
+  return useQuery(getStudentsWithSignatureQueryOptions(courseId));
 };
 
 // Hooks
@@ -94,6 +90,19 @@ export const useDeleteLabCourse = () => {
     mutationFn: (id: number) => labCourseService.deleteById(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["lab-courses"] });
+    },
+  });
+};
+
+export const useUpdateSignatureRequirement = (courseId: number) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (requiredExercises: number) =>
+      labCourseService.updateSignatureRequirement(courseId, requiredExercises),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["lab-courses", courseId] });
+      queryClient.invalidateQueries({ queryKey: ["lab-courses", courseId, "students-signature"] });
     },
   });
 };

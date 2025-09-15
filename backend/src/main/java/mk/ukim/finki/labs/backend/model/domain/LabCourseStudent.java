@@ -3,6 +3,8 @@ package mk.ukim.finki.labs.backend.model.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -21,6 +23,9 @@ public class LabCourseStudent {
     @ManyToOne(optional = false)
     @JoinColumn(name = "student_id")
     private Student student;
+
+    @OneToMany(mappedBy = "labCourseStudent")
+    private List<StudentExerciseScore> studentExerciseScores;
 
     @Enumerated(EnumType.STRING)
     private SignatureStatus signatureStatus;

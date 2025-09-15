@@ -1,5 +1,5 @@
-import { FilterIcon, Search, UserPlus, UserX } from "lucide-react";
-import { createFileRoute, useParams } from "@tanstack/react-router";
+import { CheckCircle, FilterIcon, Search, UserPlus, UserX, XCircle } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import z from "zod";
 import type { FilterCourseStudentResponse } from "@/services/lab-course/models";
@@ -20,6 +20,11 @@ import {
 } from "@/data/labCourseStudent";
 import { AddStudentToCourseDialog } from "@/components/courses/students/add-student-to-course-form-dialog";
 import { ConfirmDialog } from "@/components/common/confirm-dialog";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import {
+  getLabCourseByIdQueryOptions,
+  getStudentsWithSignatureQueryOptions,
+} from "@/data/labCourse";
 
 const studentsSearchSchema = z.object({
   page: z.number().catch(DEFAULT_PAGE),
@@ -51,7 +56,13 @@ function RouteComponent() {
   const searchParams = Route.useSearch();
   const { courseId } = Route.useParams();
 
+  const { data: course } = useSuspenseQuery(getLabCourseByIdQueryOptions(Number(courseId)));
+  console.log(course);
+
   const [isAddStudentsDialogOpen, setIsAddStudentsDialogOpen] = useState(false);
+
+  const { data } = useQuery(getStudentsWithSignatureQueryOptions(courseId));
+  const students = data?.items ?? [];
 
   const [studyProgramSearchValue, setStudyProgramSearchValue] = useState<string>("");
   const {
@@ -154,9 +165,19 @@ function RouteComponent() {
                     {student.name} {student.lastName}
                   </h3>
                   <Badge variant="outline">{student.index}</Badge>
-                  <Badge variant={student.signatureStatus === "ELIGIBLE" ? "default" : "secondary"}>
-                    {student.signatureStatus === "ELIGIBLE" ? "Eligible" : "Not Eligible"}
-                  </Badge>
+                  {student.signatureStatus === "ELIGIBLE" ? (
+                    <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                      <CheckCircle className="mr-1 h-3 w-3" />
+                      Signature ({student.labsCompleted}/
+                      {course?.requiredExercisesForSignature ?? course?.totalLabs})
+                    </Badge>
+                  ) : (
+                    <Badge variant="destructive">
+                      <XCircle className="mr-1 h-3 w-3" />
+                      No Signature ({student.labsCompleted}/
+                      {course?.requiredExercisesForSignature ?? course?.totalLabs} required)
+                    </Badge>
+                  )}
                 </div>
                 <div className="flex flex-col md:flex-row md:items-center gap-4 mt-1 text-sm text-muted-foreground">
                   <span>{student.email}</span>

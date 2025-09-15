@@ -69,3 +69,14 @@ export const addStudentsToLabCourse = async (
 export const useRemoveStudentFromCourse = async (courseId: number, studentIndex: string) => {
   return await apiClient.delete(`api/lab-courses/${courseId}/students/${studentIndex}`).json();
 };
+
+export const getStudentsWithSignatureStatus = (courseId: number) =>
+  apiClient.get(`api/lab-courses/${courseId}/students`).json<FilterCourseStudentResponse>();
+
+export const updateSignatureForCourse = (courseId: number) =>
+  apiClient.post(`api/lab-courses/${courseId}/update-signature`);
+
+export const updateSignatureRequirement = (courseId: number, requiredExercises: number) =>
+  apiClient.put(`/api/lab-courses/${courseId}/update-signature-requirement`, {
+    json: { requiredExercises },
+  });

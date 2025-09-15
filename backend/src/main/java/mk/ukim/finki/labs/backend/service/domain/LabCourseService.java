@@ -23,7 +23,7 @@ public interface LabCourseService {
 
     void deleteById(Long id);
 
-    Page<Student> filterStudents(Long courseId, String search, String studyProgramCode, Integer page, Integer pageSize);
+    Page<LabCourseStudent> filterStudents(Long courseId, String search, String studyProgramCode, Integer page, Integer pageSize);
 
     void addStudentsToCourse(Long courseId, List<String> studentIds);
 

@@ -9,6 +9,7 @@ import mk.ukim.finki.labs.backend.dto.lab_course.UpdateLabCourseDTO;
 import mk.ukim.finki.labs.backend.model.domain.LabCourse;
 import mk.ukim.finki.labs.backend.model.domain.LabCourseStudent;
 import mk.ukim.finki.labs.backend.repository.JoinedSubjectRepository;
+import mk.ukim.finki.labs.backend.repository.LabCourseRepository;
 import mk.ukim.finki.labs.backend.repository.ProfessorRepository;
 import mk.ukim.finki.labs.backend.repository.SemesterRepository;
 import mk.ukim.finki.labs.backend.service.application.LabCourseApplicationService;
@@ -26,7 +27,7 @@ public class LabCourseApplicationServiceImpl implements LabCourseApplicationServ
     private final SemesterRepository semesterRepository;
     private final JoinedSubjectRepository joinedSubjectRepository;
     private final ProfessorRepository professorRepository;
-    
+    private final LabCourseRepository labCourseRepository;
     @Override
     public PaginatedList<LabCourseDTO> filter(String search, String semesterCode, Integer page, Integer pageSize) {
         var courses = labCourseService.filter(search, semesterCode, page, pageSize);
@@ -141,12 +142,13 @@ public class LabCourseApplicationServiceImpl implements LabCourseApplicationServ
         labCourseService.updateSignatureStatusForCourse(courseId);
     }
 
-//    @Override
-//    public void updateRequiredExercisesForSignature(Long courseId, int requiredExercises) {
-//        LabCourse labCourse = labCourseService.findById(courseId)
-//                .orElseThrow(() -> new IllegalArgumentException("LabCourse with id " + courseId + " not found"));
-//
-//        labCourse.setRequiredExercisesForSignature(requiredExercises);
-//        labCourseService.save(labCourse);
-//    }
+    @Override
+    public void updateRequiredExercisesForSignature(Long courseId, int requiredExercises) {
+        LabCourse course = labCourseRepository.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Course not found"));
+
+        course.setRequiredExercisesForSignature(requiredExercises);
+
+        labCourseRepository.save(course);
+    }
 }

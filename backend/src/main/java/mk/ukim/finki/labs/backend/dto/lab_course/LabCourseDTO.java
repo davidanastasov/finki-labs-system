@@ -16,10 +16,14 @@ public record LabCourseDTO(
         List<LabCourseProfessorDTO> assistants,
         LabCourseStatus status,
         Integer enrolledStudentsCount,
-        Integer requiredExercisesForSignature
+        Integer requiredExercisesForSignature,
+        Integer totalLabs
 ) {
 
     public static LabCourseDTO from(LabCourse labCourse) {
+
+        Integer totalLabs = labCourse.getExercises() != null ? labCourse.getExercises().size() : 0;
+
         return new LabCourseDTO(
                 labCourse.getId(),
                 Optional.ofNullable(labCourse.getSemester())
@@ -39,7 +43,8 @@ public record LabCourseDTO(
                         .toList(),
                 labCourse.getStatus(),
                 labCourse.getLabCourseStudents() != null ? labCourse.getLabCourseStudents().size() : 0,
-                labCourse.getRequiredExercisesForSignature()
+                labCourse.getRequiredExercisesForSignature(),
+                totalLabs
         );
     }
 

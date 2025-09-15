@@ -44,12 +44,14 @@ public class LabCourse {
     @Column(length = 1000)
     private String description;
 
-    //@Column(nullable = false)
-    @Transient
+    //@Transient
     private Integer requiredExercisesForSignature;
 
     @Enumerated(EnumType.STRING)
     private LabCourseStatus status;
+
+    @OneToMany(mappedBy = "labCourse")
+    private List<Exercise> exercises;
 
     // Constructor without ID for creating new entities
     public LabCourse(Semester semester, JoinedSubject joinedSubject, 

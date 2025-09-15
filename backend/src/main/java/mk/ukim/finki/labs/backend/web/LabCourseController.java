@@ -124,13 +124,14 @@ public class LabCourseController {
         labCourseApplicationService.updateSignatureStatusForCourse(courseId);
     }
 
-//    @PutMapping("{courseId}/update-signature-requirement")
-//    public void updateSignatureRequirement(
-//            @PathVariable Long courseId,
-//            @RequestBody Map<String, Integer> body
-//    ) {
-//        int requiredExercises = body.get("requiredExercises");
-//        labCourseApplicationService.updateRequiredExercisesForSignature(courseId, requiredExercises);
-//    }
+    @PutMapping("{courseId}/update-signature-requirement")
+    public ResponseEntity<Void> updateSignatureRequirement(
+            @PathVariable Long courseId,
+            @RequestBody Map<String, Integer> body
+    ) {
+        int requiredExercises = body.get("requiredExercises");
+        labCourseApplicationService.updateRequiredExercisesForSignature(courseId, requiredExercises);
+        return ResponseEntity.ok().build();
+    }
 
 }
