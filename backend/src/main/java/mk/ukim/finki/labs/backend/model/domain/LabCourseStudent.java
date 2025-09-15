@@ -24,10 +24,7 @@ public class LabCourseStudent {
     @JoinColumn(name = "student_id")
     private Student student;
 
-//    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<StudentExerciseScore> studentExerciseScores;
-
-    @OneToMany(mappedBy = "labCourseStudent")
+    @OneToMany(mappedBy = "labCourseStudent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudentExerciseScore> studentExerciseScores;
 
     @Enumerated(EnumType.STRING)

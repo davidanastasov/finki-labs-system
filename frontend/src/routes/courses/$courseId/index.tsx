@@ -1,15 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Settings } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Settings } from "lucide-react";
 import { getLabCourseByIdQueryOptions, useUpdateSignatureRequirement } from "@/data/labCourse";
 import { capitalize } from "@/lib/utils";
-import { useEffect, useState } from "react";
 // import { updateSignatureRequirement } from "@/services/lab-course/labCourseService";
 
 export const Route = createFileRoute("/courses/$courseId/")({
@@ -20,9 +20,7 @@ function CourseOverviewComponent() {
   const { courseId } = Route.useParams();
   const { data: course } = useSuspenseQuery(getLabCourseByIdQueryOptions(Number(courseId)));
 
-  const saveSignatureRequirement = course
-    ? useUpdateSignatureRequirement(course.id).mutateAsync
-    : undefined;
+  const saveSignatureRequirement = useUpdateSignatureRequirement(course.id).mutateAsync;
 
   // const signatureConditions = {
   //   requiredLabs: course.requiredExercisesForSignature,
@@ -39,13 +37,11 @@ function CourseOverviewComponent() {
   });
 
   useEffect(() => {
-    if (course) {
-      setEditableConditions({
-        requiredLabs: course.requiredExercisesForSignature,
-        totalLabs: course.totalLabs,
-        additionalRequirements: "",
-      });
-    }
+    setEditableConditions({
+      requiredLabs: course.requiredExercisesForSignature,
+      totalLabs: course.totalLabs,
+      additionalRequirements: "",
+    });
   }, [course]);
 
   return (
@@ -147,7 +143,7 @@ function CourseOverviewComponent() {
                     id="requiredLabs"
                     type="number"
                     min="0"
-                    value={editableConditions.requiredLabs}
+                    value={editableConditions.requiredLabs ?? ""}
                     onChange={(e) =>
                       setEditableConditions({
                         ...editableConditions,
@@ -187,11 +183,11 @@ function CourseOverviewComponent() {
               <div className="flex gap-2">
                 <Button
                   size="sm"
+                  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                   disabled={!isEditingConditions || !course || !saveSignatureRequirement}
                   onClick={async () => {
-                    if (!saveSignatureRequirement) return;
                     try {
-                      await saveSignatureRequirement(editableConditions.requiredLabs);
+                      await saveSignatureRequirement(editableConditions.requiredLabs || 0);
                       setIsEditingConditions(false);
                       console.log("Save successful");
                     } catch (error) {

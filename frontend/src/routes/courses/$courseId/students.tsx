@@ -2,6 +2,7 @@ import { CheckCircle, FilterIcon, Search, UserPlus, UserX, XCircle } from "lucid
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import z from "zod";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import type { FilterCourseStudentResponse } from "@/services/lab-course/models";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,6 @@ import {
 } from "@/data/labCourseStudent";
 import { AddStudentToCourseDialog } from "@/components/courses/students/add-student-to-course-form-dialog";
 import { ConfirmDialog } from "@/components/common/confirm-dialog";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { getLabCourseByIdQueryOptions } from "@/data/labCourse";
 
 const studentsSearchSchema = z.object({
@@ -163,7 +163,7 @@ function RouteComponent() {
                     <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                       <CheckCircle className="mr-1 h-3 w-3" />
                       Signature{" "}
-                      {course?.requiredExercisesForSignature !== null && (
+                      {course.requiredExercisesForSignature !== null && (
                         <span>
                           ({student.labsCompleted}/{course.requiredExercisesForSignature})
                         </span>
@@ -173,7 +173,7 @@ function RouteComponent() {
                     <Badge variant="destructive">
                       <XCircle className="mr-1 h-3 w-3" />
                       No Signature{" "}
-                      {course?.requiredExercisesForSignature !== null && (
+                      {course.requiredExercisesForSignature !== null && (
                         <span>
                           ({student.labsCompleted}/{course.requiredExercisesForSignature})
                         </span>
