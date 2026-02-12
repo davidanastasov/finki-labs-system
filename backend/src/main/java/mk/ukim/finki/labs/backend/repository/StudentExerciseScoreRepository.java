@@ -1,7 +1,5 @@
 package mk.ukim.finki.labs.backend.repository;
 
-import mk.ukim.finki.labs.backend.model.domain.LabCourse;
-import mk.ukim.finki.labs.backend.model.domain.Student;
 import mk.ukim.finki.labs.backend.model.domain.StudentExerciseScore;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -27,6 +25,4 @@ public interface StudentExerciseScoreRepository extends JpaSpecificationReposito
     List<StudentExerciseScore> findByStudentIndexAndCourseId(@Param("studentIndex") String studentIndex, 
                                                              @Param("courseId") Long courseId);
 
-    List<StudentExerciseScore> findByStudentAndExerciseLabCourse(Student student, LabCourse labCourse);
-    void deleteByStudentIndexAndExerciseId(String studentIndex, Long exerciseId);
 }

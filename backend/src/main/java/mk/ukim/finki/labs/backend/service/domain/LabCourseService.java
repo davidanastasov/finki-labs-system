@@ -2,11 +2,11 @@ package mk.ukim.finki.labs.backend.service.domain;
 
 import mk.ukim.finki.labs.backend.model.domain.LabCourse;
 import mk.ukim.finki.labs.backend.model.domain.LabCourseStudent;
-import mk.ukim.finki.labs.backend.model.domain.SignatureStatus;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface LabCourseService {
     
@@ -28,7 +28,9 @@ public interface LabCourseService {
 
     void removeStudentFromCourse(Long courseId, String studentId);
 
-    SignatureStatus calculateSignatureStatus(LabCourseStudent student);
+    void recalculateSignatureStatusesForCourse(Long courseId);
+
+    void recalculateSignatureStatusesForStudents(Long courseId, Set<String> studentIndexes);
 
     List<LabCourseStudent> findAllStudentsByCourseId(Long courseId);
 

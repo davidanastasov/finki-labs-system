@@ -1,6 +1,7 @@
 package mk.ukim.finki.labs.backend.service.domain.impl;
 
 import lombok.AllArgsConstructor;
+import mk.ukim.finki.labs.backend.model.events.SignatureRequirementsUpdatedEvent;
 import mk.ukim.finki.labs.backend.model.domain.*;
 import mk.ukim.finki.labs.backend.repository.LabCourseRepository;
 import mk.ukim.finki.labs.backend.repository.LabCourseStudentRepository;
@@ -8,6 +9,7 @@ import mk.ukim.finki.labs.backend.repository.StudentExerciseScoreRepository;
 import mk.ukim.finki.labs.backend.repository.StudentRepository;
 import mk.ukim.finki.labs.backend.service.domain.LabCourseService;
 import mk.ukim.finki.labs.backend.model.exceptions.DuplicateLabCourseException;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static mk.ukim.finki.labs.backend.service.specification.FieldFilterSpecification.filterEquals;
 import static mk.ukim.finki.labs.backend.service.specification.FieldFilterSpecification.filterContainsText;
@@ -29,7 +32,8 @@ public class LabCourseServiceImpl implements LabCourseService {
     private final StudentRepository studentRepository;
     private final LabCourseStudentRepository labCourseStudentRepository;
     private final StudentExerciseScoreRepository studentExerciseScoreRepository;
-    
+    private final ApplicationEventPublisher eventPublisher;
+
     @Override
     public Page<LabCourse> filter(String search, String semesterCode, Integer page, Integer pageSize) {
         
@@ -135,6 +139,11 @@ public class LabCourseServiceImpl implements LabCourseService {
     }
 
     @Override
+    public List<LabCourseStudent> findAllStudentsByCourseId(Long courseId) {
+        return labCourseStudentRepository.findAllByLabCourseId(courseId);
+    }
+
+    @Override
     public Page<LabCourseStudent> filterStudents(Long courseId, String search, String studyProgramCode, Integer page, Integer pageSize) {
 
         Specification<LabCourseStudent> fullNameSpec = (root, query, cb) -> {
@@ -186,8 +195,7 @@ public class LabCourseServiceImpl implements LabCourseService {
         labCourseStudentRepository.deleteById(id);
     }
 
-    @Override
-    public SignatureStatus calculateSignatureStatus(LabCourseStudent student) {
+    private SignatureStatus calculateSignatureStatus(LabCourseStudent student) {
         LabCourse course = student.getLabCourse();
 
         // Handle courses without signature conditions
@@ -196,7 +204,7 @@ public class LabCourseServiceImpl implements LabCourseService {
         }
 
         List<StudentExerciseScore> scores = studentExerciseScoreRepository
-                .findByStudentAndExerciseLabCourse(student.getStudent(), course);
+                .findByStudentIndexAndCourseId(student.getStudent().getIndex(), course.getId());
 
         long successfulExercisesCount = scores.stream()
                 .filter(score -> {
@@ -214,8 +222,30 @@ public class LabCourseServiceImpl implements LabCourseService {
     }
 
     @Override
-    public List<LabCourseStudent> findAllStudentsByCourseId(Long courseId) {
-        return labCourseStudentRepository.findAllByLabCourseId(courseId);
+    public void recalculateSignatureStatusesForCourse(Long courseId) {
+        List<LabCourseStudent> students = labCourseStudentRepository.findAllByLabCourseId(courseId);
+
+        students.forEach(student -> {
+            SignatureStatus signatureStatus = calculateSignatureStatus(student);
+            student.setSignatureStatus(signatureStatus);
+        });
+
+        labCourseStudentRepository.saveAll(students);
+    }
+
+    @Override
+    public void recalculateSignatureStatusesForStudents(Long courseId, Set<String> studentIndexes) {
+        List<LabCourseStudent> students = labCourseStudentRepository.findAllByLabCourseIdAndStudentIndexIn(
+            courseId,
+            studentIndexes
+        );
+
+        students.forEach(student -> {
+            SignatureStatus signatureStatus = calculateSignatureStatus(student);
+            student.setSignatureStatus(signatureStatus);
+        });
+
+        labCourseStudentRepository.saveAll(students);
     }
 
     @Override
@@ -231,5 +261,7 @@ public class LabCourseServiceImpl implements LabCourseService {
 
         course.setRequiredExercisesForSignature(requiredExercises);
         labCourseRepository.save(course);
+
+        eventPublisher.publishEvent(new SignatureRequirementsUpdatedEvent(this, courseId));
     }
 }

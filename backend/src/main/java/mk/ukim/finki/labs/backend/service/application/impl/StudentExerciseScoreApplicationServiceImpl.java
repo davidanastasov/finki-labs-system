@@ -87,8 +87,6 @@ public class StudentExerciseScoreApplicationServiceImpl implements StudentExerci
                 var result = updateStudentScore(exerciseId, scoreUpdate);
                 results.add(result);
             } catch (Exception e) {
-                // In a real application, you might want to collect errors and return them
-                // For now, we'll continue processing other scores
                 throw new RuntimeException("Failed to update score for student " + scoreUpdate.studentIndex() + ": " + e.getMessage());
             }
         }
