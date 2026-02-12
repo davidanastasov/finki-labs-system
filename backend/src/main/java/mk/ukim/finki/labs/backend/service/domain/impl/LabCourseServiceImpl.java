@@ -202,13 +202,7 @@ public class LabCourseServiceImpl implements LabCourseService {
                 .findByStudentIndexAndCourseId(student.getStudent().getIndex(), course.getId());
 
         long successfulExercisesCount = scores.stream()
-                .filter(score -> {
-                    Integer corePoints = score.getCorePoints();
-                    Integer minPoints = Optional.ofNullable(score.getExercise())
-                            .map(Exercise::getMinPointsForSignature)
-                            .orElse(0);
-                    return corePoints != null && corePoints >= minPoints;
-                })
+                .filter(StudentExerciseScore::isCompleted)
                 .count();
 
         return successfulExercisesCount >= course.getRequiredExercisesForSignature()

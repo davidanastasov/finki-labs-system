@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Getter
 @Setter
@@ -58,7 +59,7 @@ public class StudentExerciseScore {
     }
 
     public boolean isCompleted() {
-        Integer minPoints = exercise.getMinPointsForSignature();
+        Integer minPoints = Optional.ofNullable(exercise.getMinPointsForSignature()).orElse(0);
         return corePoints != null && corePoints >= minPoints;
     }
 }
