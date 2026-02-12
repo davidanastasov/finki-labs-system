@@ -35,4 +35,12 @@ public class LabCourseStudent {
         this.student = student;
         this.signatureStatus = SignatureStatus.NOT_ELIGIBLE;
     }
+
+    public long getCompletedExercisesCount() {
+        if (studentExerciseScores == null) return 0;
+
+        return studentExerciseScores.stream()
+                .filter(StudentExerciseScore::isCompleted)
+                .count();
+    }
 }

@@ -49,4 +49,9 @@ public class StudentExerciseScore {
         this.corePoints = corePoints;
         this.dateGraded = dateGraded;
     }
+
+    public boolean isCompleted() {
+        Integer minPoints = exercise.getMinPointsForSignature();
+        return corePoints != null && corePoints >= minPoints;
+    }
 }

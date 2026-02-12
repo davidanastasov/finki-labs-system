@@ -54,7 +54,6 @@ function RouteComponent() {
   const { courseId } = Route.useParams();
 
   const { data: course } = useSuspenseQuery(getLabCourseByIdQueryOptions(Number(courseId)));
-  console.log(course);
 
   const [isAddStudentsDialogOpen, setIsAddStudentsDialogOpen] = useState(false);
 
