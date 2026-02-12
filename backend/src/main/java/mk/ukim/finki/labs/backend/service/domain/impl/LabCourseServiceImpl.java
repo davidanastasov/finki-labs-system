@@ -9,7 +9,6 @@ import mk.ukim.finki.labs.backend.repository.StudentRepository;
 import mk.ukim.finki.labs.backend.service.domain.LabCourseService;
 import mk.ukim.finki.labs.backend.model.exceptions.DuplicateLabCourseException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -187,23 +186,6 @@ public class LabCourseServiceImpl implements LabCourseService {
         labCourseStudentRepository.deleteById(id);
     }
 
-//    @Override
-//    public SignatureStatus calculateSignatureStatus(LabCourseStudent student) {
-//        LabCourse course = student.getLabCourse();
-//
-//        List<StudentExerciseScore> scores = studentExerciseScoreRepository
-//                .findByStudentAndExerciseLabCourse(student.getStudent(), course);
-//
-//        long successful = scores.stream()
-//                .filter(score -> score.getCorePoints() != null
-//                && score.getCorePoints() >= score.getExercise().getMinPointsForSignature())
-//                .count();
-//
-//        return successful >= course.getRequiredExercisesForSignature()
-//                ? SignatureStatus.ELIGIBLE
-//                : SignatureStatus.NOT_ELIGIBLE;
-//    }
-
     @Override
     public SignatureStatus calculateSignatureStatus(LabCourseStudent student) {
         LabCourse course = student.getLabCourse();
@@ -229,18 +211,6 @@ public class LabCourseServiceImpl implements LabCourseService {
         return successfulExercisesCount >= course.getRequiredExercisesForSignature()
                 ? SignatureStatus.ELIGIBLE
                 : SignatureStatus.NOT_ELIGIBLE;
-    }
-
-    @Override
-    public void updateSignatureStatusForCourse(Long courseId) {
-        List<LabCourseStudent> students = labCourseStudentRepository.findAllByLabCourseId(courseId);
-
-        for (LabCourseStudent student : students){
-            SignatureStatus signatureStatus = calculateSignatureStatus(student);
-            student.setSignatureStatus(signatureStatus);
-        }
-
-        labCourseStudentRepository.saveAll(students);
     }
 
     @Override

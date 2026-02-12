@@ -118,11 +118,6 @@ public class LabCourseController {
         return labCourseApplicationService.getStudentsWithSignatureStatus(courseId);
     }
 
-    @PostMapping("{courseId}/update-signature")
-    public void updateSignature(@PathVariable Long courseId){
-        labCourseApplicationService.updateSignatureStatusForCourse(courseId);
-    }
-
     @PutMapping("{courseId}/update-signature-requirements")
     public ResponseEntity<Void> updateSignatureRequirements(
             @PathVariable Long courseId,

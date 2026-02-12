@@ -137,11 +137,6 @@ public class LabCourseApplicationServiceImpl implements LabCourseApplicationServ
     }
 
     @Override
-    public void updateSignatureStatusForCourse(Long courseId) {
-        labCourseService.updateSignatureStatusForCourse(courseId);
-    }
-
-    @Override
     public void updateRequiredExercisesForSignature(Long courseId, UpdateSignatureRequirementsDTO updateDto) {
         labCourseService.updateRequiredExercisesForSignature(courseId, updateDto.requiredExercises());
     }

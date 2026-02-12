@@ -31,8 +31,6 @@ public interface LabCourseApplicationService {
 
     List<LabCourseStudentDTO> getStudentsWithSignatureStatus(Long courseId);
 
-    void updateSignatureStatusForCourse(Long courseId);
-
     void updateRequiredExercisesForSignature(Long courseId, UpdateSignatureRequirementsDTO updateDto);
 
 }

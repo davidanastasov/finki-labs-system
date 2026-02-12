@@ -3,7 +3,6 @@ package mk.ukim.finki.labs.backend.service.domain;
 import mk.ukim.finki.labs.backend.model.domain.LabCourse;
 import mk.ukim.finki.labs.backend.model.domain.LabCourseStudent;
 import mk.ukim.finki.labs.backend.model.domain.SignatureStatus;
-import mk.ukim.finki.labs.backend.model.domain.Student;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -30,8 +29,6 @@ public interface LabCourseService {
     void removeStudentFromCourse(Long courseId, String studentId);
 
     SignatureStatus calculateSignatureStatus(LabCourseStudent student);
-
-    void updateSignatureStatusForCourse(Long courseId);
 
     List<LabCourseStudent> findAllStudentsByCourseId(Long courseId);
 
