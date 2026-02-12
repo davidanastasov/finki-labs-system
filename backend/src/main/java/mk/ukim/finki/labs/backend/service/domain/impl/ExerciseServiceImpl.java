@@ -1,9 +1,11 @@
 package mk.ukim.finki.labs.backend.service.domain.impl;
 
 import lombok.AllArgsConstructor;
+import mk.ukim.finki.labs.backend.model.events.SignatureRequirementsUpdatedEvent;
 import mk.ukim.finki.labs.backend.model.domain.Exercise;
 import mk.ukim.finki.labs.backend.repository.ExerciseRepository;
 import mk.ukim.finki.labs.backend.service.domain.ExerciseService;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +18,7 @@ import java.util.Optional;
 public class ExerciseServiceImpl implements ExerciseService {
     
     private final ExerciseRepository exerciseRepository;
+    private final ApplicationEventPublisher eventPublisher;
     
     @Override
     @Transactional(readOnly = true)
@@ -32,6 +35,15 @@ public class ExerciseServiceImpl implements ExerciseService {
     @Override
     public Optional<Exercise> save(Exercise exercise) {
         var savedExercise = exerciseRepository.save(exercise);
+        
+        // Publish event to recalculate signature statuses when min points change
+        eventPublisher.publishEvent(
+            new SignatureRequirementsUpdatedEvent(
+                this,
+                savedExercise.getLabCourse().getId()
+            )
+        );
+        
         return Optional.of(savedExercise);
     }
     
@@ -42,7 +54,6 @@ public class ExerciseServiceImpl implements ExerciseService {
         }
         exerciseRepository.deleteById(id);
     }
-    
     @Override
     @Transactional(readOnly = true)
     public long countByLabCourseId(Long labCourseId) {

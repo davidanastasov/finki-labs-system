@@ -1,6 +1,10 @@
 import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { QueryConfig } from "@/integrations/tanstack-query/types";
-import type { CreateLabCourseRequest, UpdateLabCourseRequest } from "@/services/lab-course/models";
+import type {
+  CreateLabCourseRequest,
+  UpdateLabCourseRequest,
+  UpdateSignatureRequirementsRequest,
+} from "@/services/lab-course/models";
 import labCourseService from "@/services/lab-course";
 
 // Query options
@@ -80,6 +84,19 @@ export const useDeleteLabCourse = () => {
     mutationFn: (id: number) => labCourseService.deleteById(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["lab-courses"] });
+    },
+  });
+};
+
+export const useUpdateSignatureRequirements = (courseId: number) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: UpdateSignatureRequirementsRequest) =>
+      labCourseService.updateSignatureRequirements(courseId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["lab-courses", courseId] });
+      queryClient.invalidateQueries({ queryKey: ["lab-courses", courseId, "students-signature"] });
     },
   });
 };

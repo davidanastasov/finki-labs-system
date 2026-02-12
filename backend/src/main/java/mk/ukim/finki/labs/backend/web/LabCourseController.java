@@ -113,4 +113,13 @@ public class LabCourseController {
         return ResponseEntity.status(HttpStatus.CREATED).body(exercise);
     }
 
+    @PutMapping("{courseId}/update-signature-requirements")
+    public ResponseEntity<Void> updateSignatureRequirements(
+            @PathVariable Long courseId,
+            @Valid @RequestBody UpdateSignatureRequirementsDTO updateDto
+    ) {
+        labCourseApplicationService.updateRequiredExercisesForSignature(courseId, updateDto);
+        return ResponseEntity.ok().build();
+    }
+
 }

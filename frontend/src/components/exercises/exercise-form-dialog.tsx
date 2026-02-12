@@ -52,11 +52,16 @@ const formSchema = z
     totalPoints: z
       .number({ error: "Total points is required" })
       .min(1, "Total points must be at least 1"),
+    minPointsForSignature: z.number().min(0, "Minimum points must be at least 0").optional(),
     status: z.enum(ExerciseStatus, { error: "Status is required" }),
   })
   .refine((data) => data.labDate <= data.dueDate, {
     message: "Lab date must be before or same as due date",
     path: ["labDate"],
+  })
+  .refine((data) => !data.minPointsForSignature || data.minPointsForSignature <= data.totalPoints, {
+    message: "Minimum points for signature cannot exceed total points",
+    path: ["minPointsForSignature"],
   });
 
 interface ExerciseDialogProps {
@@ -93,6 +98,7 @@ export function ExerciseDialog({
       labDate: undefined,
       dueDate: undefined,
       totalPoints: undefined,
+      minPointsForSignature: undefined,
       status: ExerciseStatus.DRAFT,
     },
   });
@@ -114,6 +120,7 @@ export function ExerciseDialog({
         labDate,
         dueDate,
         totalPoints: exerciseData.totalPoints,
+        minPointsForSignature: exerciseData.minPointsForSignature,
         status: exerciseData.status,
       });
 
@@ -134,6 +141,7 @@ export function ExerciseDialog({
         labDate,
         dueDate,
         totalPoints: exerciseData.totalPoints,
+        minPointsForSignature: exerciseData.minPointsForSignature,
         status: exerciseData.status,
       });
     } else {
@@ -144,6 +152,7 @@ export function ExerciseDialog({
         labDate: undefined,
         dueDate: undefined,
         totalPoints: undefined,
+        minPointsForSignature: undefined,
         status: ExerciseStatus.DRAFT,
       });
     }
@@ -161,6 +170,7 @@ export function ExerciseDialog({
       labDate: format(data.labDate, "yyyy-MM-dd"),
       dueDate: format(data.dueDate, "yyyy-MM-dd"),
       totalPoints: data.totalPoints,
+      minPointsForSignature: data.minPointsForSignature,
       labCourseId,
       status: data.status,
     };
@@ -332,6 +342,28 @@ export function ExerciseDialog({
                               field.onChange(
                                 value === "" ? undefined : parseInt(value) || undefined,
                               );
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="minPointsForSignature"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Min Points for Signature</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            min="0"
+                            value={field.value ?? ""}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              field.onChange(value === "" ? undefined : parseInt(value));
                             }}
                           />
                         </FormControl>

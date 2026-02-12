@@ -60,6 +60,8 @@ export type LabCourseResponse = {
   }[];
   status: LabCourseStatus;
   enrolledStudentsCount: number;
+  requiredExercisesForSignature: number | null;
+  totalLabs: number;
 };
 
 export type CreateLabCourseRequest = {
@@ -98,8 +100,14 @@ export type FilterCourseStudentResponse = PaginatedResponse<{
     code: string;
     name: string;
   };
+  labsCompleted: number;
+  signatureStatus: "NOT_ELIGIBLE" | "ELIGIBLE";
 }>;
 
 export type AddStudentsToLabCourseRequest = {
   studentIds: string[];
+};
+
+export type UpdateSignatureRequirementsRequest = {
+  requiredExercises: number;
 };

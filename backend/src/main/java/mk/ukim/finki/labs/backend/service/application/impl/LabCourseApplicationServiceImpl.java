@@ -6,6 +6,7 @@ import mk.ukim.finki.labs.backend.dto.lab_course.CreateLabCourseDTO;
 import mk.ukim.finki.labs.backend.dto.lab_course.LabCourseDTO;
 import mk.ukim.finki.labs.backend.dto.lab_course.LabCourseStudentDTO;
 import mk.ukim.finki.labs.backend.dto.lab_course.UpdateLabCourseDTO;
+import mk.ukim.finki.labs.backend.dto.lab_course.UpdateSignatureRequirementsDTO;
 import mk.ukim.finki.labs.backend.repository.JoinedSubjectRepository;
 import mk.ukim.finki.labs.backend.repository.ProfessorRepository;
 import mk.ukim.finki.labs.backend.repository.SemesterRepository;
@@ -123,5 +124,10 @@ public class LabCourseApplicationServiceImpl implements LabCourseApplicationServ
     @Override
     public void removeStudentFromCourse(Long courseId, String studentId) {
         labCourseService.removeStudentFromCourse(courseId, studentId);
+    }
+
+    @Override
+    public void updateRequiredExercisesForSignature(Long courseId, UpdateSignatureRequirementsDTO updateDto) {
+        labCourseService.updateRequiredExercisesForSignature(courseId, updateDto.requiredExercises());
     }
 }

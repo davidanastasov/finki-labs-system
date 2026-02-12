@@ -1,26 +1,24 @@
 package mk.ukim.finki.labs.backend.service.domain.impl;
 
 import lombok.AllArgsConstructor;
-import mk.ukim.finki.labs.backend.model.domain.LabCourse;
-import mk.ukim.finki.labs.backend.model.domain.LabCourseStudent;
-import mk.ukim.finki.labs.backend.model.domain.LabCourseStudentId;
-import mk.ukim.finki.labs.backend.model.domain.Student;
+import mk.ukim.finki.labs.backend.model.events.SignatureRequirementsUpdatedEvent;
+import mk.ukim.finki.labs.backend.model.domain.*;
 import mk.ukim.finki.labs.backend.repository.LabCourseRepository;
 import mk.ukim.finki.labs.backend.repository.LabCourseStudentRepository;
+import mk.ukim.finki.labs.backend.repository.StudentExerciseScoreRepository;
 import mk.ukim.finki.labs.backend.repository.StudentRepository;
 import mk.ukim.finki.labs.backend.service.domain.LabCourseService;
 import mk.ukim.finki.labs.backend.model.exceptions.DuplicateLabCourseException;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 import static mk.ukim.finki.labs.backend.service.specification.FieldFilterSpecification.filterEquals;
 import static mk.ukim.finki.labs.backend.service.specification.FieldFilterSpecification.filterContainsText;
@@ -33,7 +31,9 @@ public class LabCourseServiceImpl implements LabCourseService {
     private final LabCourseRepository labCourseRepository;
     private final StudentRepository studentRepository;
     private final LabCourseStudentRepository labCourseStudentRepository;
-    
+    private final StudentExerciseScoreRepository studentExerciseScoreRepository;
+    private final ApplicationEventPublisher eventPublisher;
+
     @Override
     public Page<LabCourse> filter(String search, String semesterCode, Integer page, Integer pageSize) {
         
@@ -139,7 +139,7 @@ public class LabCourseServiceImpl implements LabCourseService {
     }
 
     @Override
-    public Page<Student> filterStudents(Long courseId, String search, String studyProgramCode, Integer page, Integer pageSize) {
+    public Page<LabCourseStudent> filterStudents(Long courseId, String search, String studyProgramCode, Integer page, Integer pageSize) {
 
         Specification<LabCourseStudent> fullNameSpec = (root, query, cb) -> {
             if (search == null || search.isEmpty()) return null;
@@ -158,16 +158,10 @@ public class LabCourseServiceImpl implements LabCourseService {
                         filterEquals(LabCourseStudent.class, "student.studyProgram.code", studyProgramCode)
                 );
 
-        var labCourseStudentPage = this.labCourseStudentRepository.findAll(
+        return this.labCourseStudentRepository.findAll(
                 specification,
                 PageRequest.of(page, pageSize)
         );
-
-        List<Student> students = labCourseStudentPage
-                .map(LabCourseStudent::getStudent)
-                .getContent();
-
-        return new PageImpl<>(students, PageRequest.of(page, pageSize), labCourseStudentPage.getTotalElements());
     }
 
     @Override
@@ -196,4 +190,73 @@ public class LabCourseServiceImpl implements LabCourseService {
         labCourseStudentRepository.deleteById(id);
     }
 
+    private SignatureStatus calculateSignatureStatus(LabCourseStudent student) {
+        LabCourse course = student.getLabCourse();
+
+        // Handle courses without signature conditions
+        if (course.getRequiredExercisesForSignature() == null) {
+            return SignatureStatus.ELIGIBLE;
+        }
+
+        List<StudentExerciseScore> scores = studentExerciseScoreRepository
+                .findByStudentIndexAndCourseId(student.getStudent().getIndex(), course.getId());
+
+        long successfulExercisesCount = scores.stream()
+                .filter(score -> {
+                    Integer corePoints = score.getCorePoints();
+                    Integer minPoints = Optional.ofNullable(score.getExercise())
+                            .map(Exercise::getMinPointsForSignature)
+                            .orElse(0);
+                    return corePoints != null && corePoints >= minPoints;
+                })
+                .count();
+
+        return successfulExercisesCount >= course.getRequiredExercisesForSignature()
+                ? SignatureStatus.ELIGIBLE
+                : SignatureStatus.NOT_ELIGIBLE;
+    }
+
+    @Override
+    public void recalculateSignatureStatusesForCourse(Long courseId) {
+        List<LabCourseStudent> students = labCourseStudentRepository.findAllByLabCourseId(courseId);
+
+        students.forEach(student -> {
+            SignatureStatus signatureStatus = calculateSignatureStatus(student);
+            student.setSignatureStatus(signatureStatus);
+        });
+
+        labCourseStudentRepository.saveAll(students);
+    }
+
+    @Override
+    public void recalculateSignatureStatusesForStudents(Long courseId, Set<String> studentIndexes) {
+        List<LabCourseStudent> students = labCourseStudentRepository.findAllByLabCourseIdAndStudentIndexIn(
+            courseId,
+            studentIndexes
+        );
+
+        students.forEach(student -> {
+            SignatureStatus signatureStatus = calculateSignatureStatus(student);
+            student.setSignatureStatus(signatureStatus);
+        });
+
+        labCourseStudentRepository.saveAll(students);
+    }
+
+    @Override
+    public void updateRequiredExercisesForSignature(Long courseId, int requiredExercises) {
+        LabCourse course = labCourseRepository.findById(courseId)
+                .orElseThrow(() -> new IllegalArgumentException("LabCourse with id " + courseId + " not found"));
+
+        int totalLabs = Optional.ofNullable(course.getExercises()).map(List::size).orElse(0);
+        
+        if (requiredExercises > totalLabs) {
+            throw new IllegalArgumentException("Required exercises cannot exceed total labs");
+        }
+
+        course.setRequiredExercisesForSignature(requiredExercises);
+        labCourseRepository.save(course);
+
+        eventPublisher.publishEvent(new SignatureRequirementsUpdatedEvent(this, courseId));
+    }
 }

@@ -47,6 +47,8 @@ public class LabCourse {
     @Column(length = 1000)
     private String description;
 
+    private Integer requiredExercisesForSignature;
+
     @Enumerated(EnumType.STRING)
     private LabCourseStatus status;
 

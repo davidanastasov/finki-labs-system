@@ -7,6 +7,7 @@ import type {
   FilterLabCoursesResponse,
   LabCourseResponse,
   UpdateLabCourseRequest,
+  UpdateSignatureRequirementsRequest,
 } from "./models";
 import apiClient from "@/services/apiClient";
 
@@ -69,3 +70,11 @@ export const addStudentsToLabCourse = async (
 export const useRemoveStudentFromCourse = async (courseId: number, studentIndex: string) => {
   return await apiClient.delete(`api/lab-courses/${courseId}/students/${studentIndex}`).json();
 };
+
+export const updateSignatureRequirements = (
+  courseId: number,
+  data: UpdateSignatureRequirementsRequest,
+) =>
+  apiClient.put(`api/lab-courses/${courseId}/update-signature-requirements`, {
+    json: data,
+  });

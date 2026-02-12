@@ -1,11 +1,12 @@
 package mk.ukim.finki.labs.backend.service.domain;
 
 import mk.ukim.finki.labs.backend.model.domain.LabCourse;
-import mk.ukim.finki.labs.backend.model.domain.Student;
+import mk.ukim.finki.labs.backend.model.domain.LabCourseStudent;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface LabCourseService {
     
@@ -21,10 +22,16 @@ public interface LabCourseService {
 
     void deleteById(Long id);
 
-    Page<Student> filterStudents(Long courseId, String search, String studyProgramCode, Integer page, Integer pageSize);
+    Page<LabCourseStudent> filterStudents(Long courseId, String search, String studyProgramCode, Integer page, Integer pageSize);
 
     void addStudentsToCourse(Long courseId, List<String> studentIds);
 
     void removeStudentFromCourse(Long courseId, String studentId);
+
+    void recalculateSignatureStatusesForCourse(Long courseId);
+
+    void recalculateSignatureStatusesForStudents(Long courseId, Set<String> studentIndexes);
+
+    void updateRequiredExercisesForSignature(Long courseId, int requiredExercises);
 
 }

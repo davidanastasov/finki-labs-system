@@ -21,10 +21,26 @@ public class LabCourseStudent {
 
     @Id
     @ManyToOne(optional = false)
-    @JoinColumn(name = "student_id")
+    @JoinColumn(name = "student_index")
     private Student student;
 
-//    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<StudentExerciseScore> studentExerciseScores;
+    @OneToMany(mappedBy = "labCourseStudent", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<StudentExerciseScore> studentExerciseScores;
 
+    @Enumerated(EnumType.STRING)
+    private SignatureStatus signatureStatus;
+
+    public LabCourseStudent(LabCourse labCourse, Student student) {
+        this.labCourse = labCourse;
+        this.student = student;
+        this.signatureStatus = SignatureStatus.NOT_ELIGIBLE;
+    }
+
+    public long getCompletedExercisesCount() {
+        if (studentExerciseScores == null) return 0;
+
+        return studentExerciseScores.stream()
+                .filter(StudentExerciseScore::isCompleted)
+                .count();
+    }
 }
