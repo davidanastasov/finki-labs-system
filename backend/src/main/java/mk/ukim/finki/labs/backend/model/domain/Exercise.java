@@ -48,13 +48,14 @@ public class Exercise {
 
     // Constructor without ID for creating new entities
     public Exercise(String title, String description, LocalDate labDate, 
-                   LocalDate dueDate, Integer totalPoints,
+                   LocalDate dueDate, Integer totalPoints, Integer minPointsForSignature,
                    LabCourse labCourse, ExerciseStatus status) {
         this.title = title;
         this.description = description;
         this.labDate = labDate;
         this.dueDate = dueDate;
         this.totalPoints = totalPoints;
+        this.minPointsForSignature = minPointsForSignature;
         this.labCourse = labCourse;
         this.status = status;
     }

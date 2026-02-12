@@ -12,6 +12,7 @@ export interface ExerciseResponse {
   labDate?: string;
   dueDate?: string;
   totalPoints: number;
+  minPointsForSignature?: number;
   labCourseId: number;
   status: ExerciseStatus;
   files: ExerciseFile[];
@@ -24,6 +25,7 @@ export interface ExerciseDetailsResponse {
   labDate?: string;
   dueDate?: string;
   totalPoints: number;
+  minPointsForSignature?: number;
   status: ExerciseStatus;
   files: ExerciseFile[];
   course: {
@@ -41,6 +43,7 @@ export interface CreateExerciseRequest {
   labDate?: string;
   dueDate?: string;
   totalPoints: number;
+  minPointsForSignature?: number;
   status?: ExerciseStatus;
 }
 
@@ -51,6 +54,7 @@ export interface UpdateExerciseRequest {
   labDate?: string;
   dueDate?: string;
   totalPoints?: number;
+  minPointsForSignature?: number;
   status?: ExerciseStatus;
 }
 

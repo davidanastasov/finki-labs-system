@@ -12,6 +12,7 @@ public record ExerciseDTO(
         LocalDate labDate,
         LocalDate dueDate,
         Integer totalPoints,
+        Integer minPointsForSignature,
         Long labCourseId,
         ExerciseStatus status
 ) {
@@ -24,6 +25,7 @@ public record ExerciseDTO(
                 exercise.getLabDate(),
                 exercise.getDueDate(),
                 exercise.getTotalPoints(),
+                exercise.getMinPointsForSignature(),
                 exercise.getLabCourse().getId(),
                 exercise.getStatus()
         );

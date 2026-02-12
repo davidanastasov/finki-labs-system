@@ -14,6 +14,7 @@ public record ExerciseDetailsDTO(
         LocalDate labDate,
         LocalDate dueDate,
         Integer totalPoints,
+        Integer minPointsForSignature,
         ExerciseCourseDTO course,
         ExerciseStatus status,
         List<ExerciseFileDTO> files
@@ -31,6 +32,7 @@ public record ExerciseDetailsDTO(
                 exercise.getLabDate(),
                 exercise.getDueDate(),
                 exercise.getTotalPoints(),
+                exercise.getMinPointsForSignature(),
                 ExerciseCourseDTO.fromLabCourse(exercise.getLabCourse()),
                 exercise.getStatus(),
                 exerciseFiles

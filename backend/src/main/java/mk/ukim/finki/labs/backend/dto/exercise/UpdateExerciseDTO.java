@@ -24,6 +24,9 @@ public record UpdateExerciseDTO(
         @Min(value = 1, message = "Total points must be at least 1")
         Integer totalPoints,
 
+        @Min(value = 0, message = "Minimum points for signature must be at least 0")
+        Integer minPointsForSignature,
+
         ExerciseStatus status
 ) {
 }

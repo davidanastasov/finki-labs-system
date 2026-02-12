@@ -89,6 +89,10 @@ public class ExerciseApplicationServiceImpl implements ExerciseApplicationServic
                         existingExercise.setTotalPoints(updateDto.totalPoints());
                     }
                     
+                    if (updateDto.minPointsForSignature() != null) {
+                        existingExercise.setMinPointsForSignature(updateDto.minPointsForSignature());
+                    }
+                    
                     if (updateDto.status() != null) {
                         existingExercise.setStatus(updateDto.status());
                     }
