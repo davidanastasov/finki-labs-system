@@ -27,5 +27,6 @@ public record LabCourseStudentDTO(
                 lcs.getCompletedExercisesCount()
         );
     }
-        record LabCourseStudentStudyProgramDto(String code, String name) {}
+
+    record LabCourseStudentStudyProgramDto(String code, String name) {}
 }
