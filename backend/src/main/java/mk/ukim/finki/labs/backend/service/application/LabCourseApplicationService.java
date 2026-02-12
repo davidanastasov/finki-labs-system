@@ -29,8 +29,6 @@ public interface LabCourseApplicationService {
 
     void removeStudentFromCourse(Long courseId, String studentId);
 
-    List<LabCourseStudentDTO> getStudentsWithSignatureStatus(Long courseId);
-
     void updateRequiredExercisesForSignature(Long courseId, UpdateSignatureRequirementsDTO updateDto);
 
 }

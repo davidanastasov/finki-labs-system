@@ -139,11 +139,6 @@ public class LabCourseServiceImpl implements LabCourseService {
     }
 
     @Override
-    public List<LabCourseStudent> findAllStudentsByCourseId(Long courseId) {
-        return labCourseStudentRepository.findAllByLabCourseId(courseId);
-    }
-
-    @Override
     public Page<LabCourseStudent> filterStudents(Long courseId, String search, String studyProgramCode, Integer page, Integer pageSize) {
 
         Specification<LabCourseStudent> fullNameSpec = (root, query, cb) -> {

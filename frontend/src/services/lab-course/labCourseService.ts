@@ -71,9 +71,6 @@ export const useRemoveStudentFromCourse = async (courseId: number, studentIndex:
   return await apiClient.delete(`api/lab-courses/${courseId}/students/${studentIndex}`).json();
 };
 
-export const getStudentsWithSignatureStatus = (courseId: number) =>
-  apiClient.get(`api/lab-courses/${courseId}/students`).json<FilterCourseStudentResponse>();
-
 export const updateSignatureRequirements = (
   courseId: number,
   data: UpdateSignatureRequirementsRequest,

@@ -113,11 +113,6 @@ public class LabCourseController {
         return ResponseEntity.status(HttpStatus.CREATED).body(exercise);
     }
 
-    @GetMapping("{courseId}/students")
-    public List<LabCourseStudentDTO> getStudents(@PathVariable Long courseId){
-        return labCourseApplicationService.getStudentsWithSignatureStatus(courseId);
-    }
-
     @PutMapping("{courseId}/update-signature-requirements")
     public ResponseEntity<Void> updateSignatureRequirements(
             @PathVariable Long courseId,

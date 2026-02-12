@@ -32,8 +32,6 @@ public interface LabCourseService {
 
     void recalculateSignatureStatusesForStudents(Long courseId, Set<String> studentIndexes);
 
-    List<LabCourseStudent> findAllStudentsByCourseId(Long courseId);
-
     void updateRequiredExercisesForSignature(Long courseId, int requiredExercises);
 
 }

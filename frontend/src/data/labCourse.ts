@@ -24,16 +24,6 @@ export const getLabCourseByIdQueryOptions = (id: number) => {
   });
 };
 
-export const getStudentsWithSignatureQueryOptions = (courseId: number) =>
-  queryOptions({
-    queryKey: ["lab-courses", courseId, "students-signature"],
-    queryFn: () => labCourseService.getStudentsWithSignatureStatus(courseId),
-  });
-
-export const useStudentsWithSignature = (courseId: number) => {
-  return useQuery(getStudentsWithSignatureQueryOptions(courseId));
-};
-
 // Hooks
 type UseLabCoursesFilterOptions = {
   params: {
