@@ -4,12 +4,11 @@ import lombok.AllArgsConstructor;
 import mk.ukim.finki.labs.backend.dto.scoring.BulkUpdateScoresDTO;
 import mk.ukim.finki.labs.backend.dto.scoring.StudentExerciseScoreDTO;
 import mk.ukim.finki.labs.backend.dto.scoring.UpdateStudentScoreDTO;
-import mk.ukim.finki.labs.backend.model.domain.LabCourseStudent;
 import mk.ukim.finki.labs.backend.model.domain.StudentExerciseScore;
 import mk.ukim.finki.labs.backend.service.application.StudentExerciseScoreApplicationService;
 import mk.ukim.finki.labs.backend.service.domain.ExerciseService;
 import mk.ukim.finki.labs.backend.service.domain.StudentExerciseScoreService;
-import mk.ukim.finki.labs.backend.repository.StudentRepository;
+import mk.ukim.finki.labs.backend.repository.LabCourseStudentRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +23,7 @@ public class StudentExerciseScoreApplicationServiceImpl implements StudentExerci
     
     private final StudentExerciseScoreService scoreService;
     private final ExerciseService exerciseService;
-    private final StudentRepository studentRepository;
+    private final LabCourseStudentRepository labCourseStudentRepository;
     
     @Override
     @Transactional(readOnly = true)
@@ -40,8 +39,11 @@ public class StudentExerciseScoreApplicationServiceImpl implements StudentExerci
         var exercise = exerciseService.findById(exerciseId)
                 .orElseThrow(() -> new IllegalArgumentException("Exercise with id " + exerciseId + " not found"));
         
-        var student = studentRepository.findById(updateDto.studentIndex())
-                .orElseThrow(() -> new IllegalArgumentException("Student with index " + updateDto.studentIndex() + " not found"));
+        var labCourseStudent = labCourseStudentRepository
+                .findByLabCourseIdAndStudentIndex(exercise.getLabCourse().getId(), updateDto.studentIndex())
+                .orElseThrow(() -> new IllegalArgumentException(
+                    "Student " + updateDto.studentIndex() + " is not enrolled in this course"
+                ));
         
         // Validate points are within exercise limits
         if (updateDto.corePoints() > exercise.getTotalPoints()) {
@@ -57,11 +59,10 @@ public class StudentExerciseScoreApplicationServiceImpl implements StudentExerci
             score = existingScore.get();
             score.setCorePoints(updateDto.corePoints());
             score.setDateGraded(LocalDateTime.now());
-            score.setLabCourseStudent(new LabCourseStudent(score.getExercise().getLabCourse(), score.getStudent()));
         } else {
             // Create new score
             score = new StudentExerciseScore(
-                student,
+                labCourseStudent,
                 exercise,
                 updateDto.corePoints(),
                 LocalDateTime.now()
@@ -96,13 +97,10 @@ public class StudentExerciseScoreApplicationServiceImpl implements StudentExerci
     
     @Override
     public void deleteStudentScore(Long exerciseId, String studentIndex) {
-        // Verify exercise exists
-        exerciseService.findById(exerciseId)
-                .orElseThrow(() -> new IllegalArgumentException("Exercise with id " + exerciseId + " not found"));
-        
-        // Verify student exists
-        studentRepository.findById(studentIndex)
-                .orElseThrow(() -> new IllegalArgumentException("Student with index " + studentIndex + " not found"));
+        scoreService.findByStudentIndexAndExerciseId(studentIndex, exerciseId)
+                .orElseThrow(() -> new IllegalArgumentException(
+                    "No score found for student " + studentIndex + " on exercise " + exerciseId
+                ));
         
         scoreService.deleteByStudentIndexAndExerciseId(studentIndex, exerciseId);
     }

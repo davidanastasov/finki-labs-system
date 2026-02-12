@@ -21,7 +21,7 @@ public class LabCourseStudent {
 
     @Id
     @ManyToOne(optional = false)
-    @JoinColumn(name = "student_id")
+    @JoinColumn(name = "student_index")
     private Student student;
 
     @OneToMany(mappedBy = "labCourseStudent", cascade = CascadeType.ALL, orphanRemoval = true)

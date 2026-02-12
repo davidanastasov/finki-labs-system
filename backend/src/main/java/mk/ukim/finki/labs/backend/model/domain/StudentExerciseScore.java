@@ -15,8 +15,8 @@ import java.time.LocalDateTime;
 @Entity
 @Table(uniqueConstraints = {
     @UniqueConstraint(
-        name = "uk_student_exercise_score", 
-        columnNames = {"student_id", "exercise_id"}
+        name = "uk_labcoursestudent_exercise_score",
+        columnNames = {"lab_course_id", "student_index", "exercise_id"}
     )
 })
 public class StudentExerciseScore {
@@ -26,28 +26,35 @@ public class StudentExerciseScore {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "student_id")
-    private Student student;
+    @JoinColumns({
+        @JoinColumn(name = "lab_course_id", referencedColumnName = "lab_course_id"),
+        @JoinColumn(name = "student_index", referencedColumnName = "student_index")
+    })
+    private LabCourseStudent labCourseStudent;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "exercise_id")
     private Exercise exercise;
-
-    @ManyToOne
-    private LabCourseStudent labCourseStudent;
 
     private Integer corePoints;
 
     private LocalDateTime dateGraded;
 
     // Constructor without ID for creating new entities
-    public StudentExerciseScore(Student student, Exercise exercise, Integer corePoints, 
-                               LocalDateTime dateGraded) {
-        this.student = student;
+    public StudentExerciseScore(LabCourseStudent labCourseStudent, Exercise exercise,
+                               Integer corePoints, LocalDateTime dateGraded) {
+        this.labCourseStudent = labCourseStudent;
         this.exercise = exercise;
-        this.labCourseStudent = new LabCourseStudent(exercise.getLabCourse(), student);
         this.corePoints = corePoints;
         this.dateGraded = dateGraded;
+    }
+
+    public Student getStudent() {
+        return labCourseStudent != null ? labCourseStudent.getStudent() : null;
+    }
+
+    public LabCourse getLabCourse() {
+        return labCourseStudent != null ? labCourseStudent.getLabCourse() : null;
     }
 
     public boolean isCompleted() {
