@@ -1,16 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Settings } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { getLabCourseByIdQueryOptions, useUpdateSignatureRequirement } from "@/data/labCourse";
+import { getLabCourseByIdQueryOptions } from "@/data/labCourse";
 import { capitalize } from "@/lib/utils";
-// import { updateSignatureRequirement } from "@/services/lab-course/labCourseService";
+import { SignatureRequirementsForm } from "@/components/courses/signature/signature-requirements-form";
 
 export const Route = createFileRoute("/courses/$courseId/")({
   component: CourseOverviewComponent,
@@ -20,29 +17,7 @@ function CourseOverviewComponent() {
   const { courseId } = Route.useParams();
   const { data: course } = useSuspenseQuery(getLabCourseByIdQueryOptions(Number(courseId)));
 
-  const saveSignatureRequirement = useUpdateSignatureRequirement(course.id).mutateAsync;
-
-  // const signatureConditions = {
-  //   requiredLabs: course.requiredExercisesForSignature,
-  //   totalLabs: course.totalLabs,
-  //   additionalRequirements: "",
-  // };
-
-  const [isEditingConditions, setIsEditingConditions] = useState(false);
-
-  const [editableConditions, setEditableConditions] = useState({
-    requiredLabs: course.requiredExercisesForSignature,
-    totalLabs: course.totalLabs,
-    additionalRequirements: "",
-  });
-
-  useEffect(() => {
-    setEditableConditions({
-      requiredLabs: course.requiredExercisesForSignature,
-      totalLabs: course.totalLabs,
-      additionalRequirements: "",
-    });
-  }, [course]);
+  const [isEditing, setIsEditing] = useState(false);
 
   return (
     <>
@@ -123,93 +98,28 @@ function CourseOverviewComponent() {
                 Requirements for students to receive course signature
               </CardDescription>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsEditingConditions(!isEditingConditions)}
-            >
+            <Button variant="outline" size="sm" onClick={() => setIsEditing((editing) => !editing)}>
               <Settings className="mr-2 h-4 w-4" />
               Edit
             </Button>
           </div>
         </CardHeader>
         <CardContent>
-          {isEditingConditions ? (
-            <div className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div>
-                  <Label htmlFor="requiredLabs">Required Labs</Label>
-                  <Input
-                    id="requiredLabs"
-                    type="number"
-                    min="0"
-                    value={editableConditions.requiredLabs ?? ""}
-                    onChange={(e) =>
-                      setEditableConditions({
-                        ...editableConditions,
-                        requiredLabs: Number.parseInt(e.target.value) || 0,
-                      })
-                    }
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="totalLabs">Total Labs</Label>
-                  <Input
-                    id="totalLabs"
-                    type="number"
-                    min="1"
-                    value={editableConditions.totalLabs}
-                    disabled
-                    className="mt-1"
-                  />
-                </div>
-              </div>
-              <div>
-                <Label htmlFor="conditions">Additional Requirements</Label>
-                <Textarea
-                  id="conditions"
-                  value={editableConditions.additionalRequirements}
-                  onChange={(e) =>
-                    setEditableConditions({
-                      ...editableConditions,
-                      additionalRequirements: e.target.value,
-                    })
-                  }
-                  rows={4}
-                  className="mt-1"
-                />
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-                  disabled={!isEditingConditions || !course || !saveSignatureRequirement}
-                  onClick={async () => {
-                    try {
-                      await saveSignatureRequirement(editableConditions.requiredLabs || 0);
-                      setIsEditingConditions(false);
-                      console.log("Save successful");
-                    } catch (error) {
-                      console.error("Failed to save changes", error);
-                    }
-                  }}
-                >
-                  Save Changes
-                </Button>
-              </div>
-            </div>
+          {isEditing ? (
+            <SignatureRequirementsForm
+              courseId={course.id}
+              currentRequiredLabs={course.requiredExercisesForSignature}
+              totalLabs={course.totalLabs}
+              onEditingChange={setIsEditing}
+            />
           ) : (
             <div className="space-y-2">
               <div className="p-3 bg-muted/50 rounded-lg">
                 <p className="font-medium">
-                  {editableConditions.requiredLabs} out of {editableConditions.totalLabs} labs
+                  {course.requiredExercisesForSignature ?? 0} out of {course.totalLabs} labs
                   required
                 </p>
               </div>
-              <p className="text-muted-foreground text-sm">
-                {editableConditions.additionalRequirements}
-              </p>
             </div>
           )}
         </CardContent>

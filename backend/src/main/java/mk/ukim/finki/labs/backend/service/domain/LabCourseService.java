@@ -35,4 +35,6 @@ public interface LabCourseService {
 
     List<LabCourseStudent> findAllStudentsByCourseId(Long courseId);
 
+    void updateRequiredExercisesForSignature(Long courseId, int requiredExercises);
+
 }

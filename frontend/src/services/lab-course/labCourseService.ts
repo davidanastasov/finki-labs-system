@@ -7,6 +7,7 @@ import type {
   FilterLabCoursesResponse,
   LabCourseResponse,
   UpdateLabCourseRequest,
+  UpdateSignatureRequirementsRequest,
 } from "./models";
 import apiClient from "@/services/apiClient";
 
@@ -76,7 +77,10 @@ export const getStudentsWithSignatureStatus = (courseId: number) =>
 export const updateSignatureForCourse = (courseId: number) =>
   apiClient.post(`api/lab-courses/${courseId}/update-signature`);
 
-export const updateSignatureRequirement = (courseId: number, requiredExercises: number) =>
-  apiClient.put(`api/lab-courses/${courseId}/update-signature-requirement`, {
-    json: { requiredExercises },
+export const updateSignatureRequirements = (
+  courseId: number,
+  data: UpdateSignatureRequirementsRequest,
+) =>
+  apiClient.put(`api/lab-courses/${courseId}/update-signature-requirements`, {
+    json: data,
   });

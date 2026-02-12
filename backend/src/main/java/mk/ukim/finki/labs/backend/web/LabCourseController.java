@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Map;
 
 @AllArgsConstructor
 @RestController
@@ -124,13 +123,12 @@ public class LabCourseController {
         labCourseApplicationService.updateSignatureStatusForCourse(courseId);
     }
 
-    @PutMapping("{courseId}/update-signature-requirement")
-    public ResponseEntity<Void> updateSignatureRequirement(
+    @PutMapping("{courseId}/update-signature-requirements")
+    public ResponseEntity<Void> updateSignatureRequirements(
             @PathVariable Long courseId,
-            @RequestBody Map<String, Integer> body
+            @Valid @RequestBody UpdateSignatureRequirementsDTO updateDto
     ) {
-        int requiredExercises = body.get("requiredExercises");
-        labCourseApplicationService.updateRequiredExercisesForSignature(courseId, requiredExercises);
+        labCourseApplicationService.updateRequiredExercisesForSignature(courseId, updateDto);
         return ResponseEntity.ok().build();
     }
 

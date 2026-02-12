@@ -107,3 +107,7 @@ export type FilterCourseStudentResponse = PaginatedResponse<{
 export type AddStudentsToLabCourseRequest = {
   studentIds: string[];
 };
+
+export type UpdateSignatureRequirementsRequest = {
+  requiredExercises: number;
+};

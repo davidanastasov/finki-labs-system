@@ -247,4 +247,19 @@ public class LabCourseServiceImpl implements LabCourseService {
     public List<LabCourseStudent> findAllStudentsByCourseId(Long courseId) {
         return labCourseStudentRepository.findAllByLabCourseId(courseId);
     }
+
+    @Override
+    public void updateRequiredExercisesForSignature(Long courseId, int requiredExercises) {
+        LabCourse course = labCourseRepository.findById(courseId)
+                .orElseThrow(() -> new IllegalArgumentException("LabCourse with id " + courseId + " not found"));
+
+        int totalLabs = Optional.ofNullable(course.getExercises()).map(List::size).orElse(0);
+        
+        if (requiredExercises > totalLabs) {
+            throw new IllegalArgumentException("Required exercises cannot exceed total labs");
+        }
+
+        course.setRequiredExercisesForSignature(requiredExercises);
+        labCourseRepository.save(course);
+    }
 }
